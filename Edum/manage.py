@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonasdad
 """
 Command-line utility for administrative tasks.
 """
