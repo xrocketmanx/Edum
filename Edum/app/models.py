@@ -30,13 +30,20 @@ class User(models.Model):
     second_name = models.CharField(max_length=40)
     login = models.CharField(max_length=16)
     password = models.CharField(max_length=16)
-    tests_results = models.ManyToManyField(Test, through="TestResult", through_fields=('user','test'))
+    tests_results = models.ManyToManyField(
+        Test,
+        through="TestResult",
+        through_fields=('user','test')
+    )
     courses_results = models.ManyToManyField(
         Course,
         through="CourseProgress",
         through_fields=('user','course')
     )
-    signed_courses = models.ManyToManyField(Course, related_name="signed_courses")
+    signed_courses = models.ManyToManyField(
+        Course,
+        related_name="signed_courses"
+    )
 
 class Question(models.Model):
     #add answer_count
