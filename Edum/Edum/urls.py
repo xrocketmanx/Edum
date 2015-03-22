@@ -3,7 +3,8 @@ Definition of urls for Edum.
 """
 
 from datetime import datetime
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
+from django.contrib import admin
 from app.forms import BootstrapAuthenticationForm
 
 # Uncomment the next lines to enable the admin:
@@ -34,6 +35,7 @@ urlpatterns = patterns('',
             'next_page': '/',
         },
         name='logout'),
+    url(r'^admin/', include(admin.site.urls)),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

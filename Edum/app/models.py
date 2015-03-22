@@ -7,7 +7,10 @@ from django.db import models
 class Course(models.Model):
     name = models.CharField(max_length=250)
     overview = models.TextField()
-    duration = models.TimeField()
+    duration = models.IntegerField() # hours
+
+    def __str__(self):
+        return self.name
     
 class Module(models.Model):
     test_count = models.IntegerField(null=False, default=0)
@@ -16,14 +19,25 @@ class Module(models.Model):
     overview = models.TextField()
     course = models.ForeignKey(Course)
 
+    def __str__(self):
+        return self.name
+
 class Lecture(models.Model):
     video_url = models.TextField()
     name = models.CharField(max_length=250)
     module = models.ForeignKey(Module)
 
+    def __str__(self):
+        return self.name
+
 class Test(models.Model):
     question_count = models.IntegerField(null=False, default=0)
     module = models.ForeignKey(Module)
+    name = models.CharField(max_length=250)
+    duration = models.IntegerField() # minutes
+
+    def __str__(self):
+        return self.name
 
 class User(models.Model):
     first_name = models.CharField(max_length=40)
@@ -45,14 +59,24 @@ class User(models.Model):
         related_name="signed_courses"
     )
 
+    def __str__(self):
+        return self.login
+
 class Question(models.Model):
-    #add answer_count
+    answer_count = models.IntegerField()
     question = models.TextField()
     test = models.ForeignKey(Test)
+
+    def __str__(self):
+        return self.question
 
 class Answer(models.Model):
     answer = models.TextField()
     question = models.OneToOneField(Question)
+    correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.answer
 
 class TestResult(models.Model):
     test = models.ForeignKey(Test)
