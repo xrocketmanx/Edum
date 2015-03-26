@@ -3,6 +3,7 @@ Definition of models.
 """
 
 from django.db import models
+from django.contrib.auth.models import User
 
 class Course(models.Model):
     name = models.CharField(max_length=250)
@@ -39,7 +40,8 @@ class Test(models.Model):
     def __str__(self):
         return self.name
 
-class User(models.Model):
+class UserProfile(models.Model):
+    user_auth = models.OneToOneField(User)
     first_name = models.CharField(max_length=40)
     second_name = models.CharField(max_length=40)
     login = models.CharField(max_length=16)
@@ -80,14 +82,14 @@ class Answer(models.Model):
 
 class TestResult(models.Model):
     test = models.ForeignKey(Test)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProfile)
     passed = models.BooleanField(null=False, default=False)
 
     def __str__(self):
         return self.user.login, self.test.name
 
 class CourseProgress(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(UserProfile)
     course = models.ForeignKey(Course)
     progress = models.IntegerField(null=False, default=0) # between 0 and 100
 

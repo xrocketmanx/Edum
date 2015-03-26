@@ -1,7 +1,7 @@
 from django.contrib import admin
-from app.models import User, Course, Module, Lecture, Test, Question, Answer, CourseProgress, TestResult
+from app.models import UserProfile, Course, Module, Lecture, Test, Question, Answer, CourseProgress, TestResult
 
-admin.site.register(User)
+admin.site.register(UserProfile)
 admin.site.register(Course)
 admin.site.register(Module)
 admin.site.register(Lecture)
