@@ -14,8 +14,8 @@ class Course(models.Model):
         return self.name
     
 class Module(models.Model):
-    test_count = models.IntegerField(null=False, default=0)
-    lecture_count = models.IntegerField(null=False, default=0)
+    test_count = models.IntegerField(default=0) #nukk=false don needed
+    lecture_count = models.IntegerField(default=0)
     name = models.CharField(max_length=250) 
     overview = models.TextField()
     course = models.ForeignKey(Course)
@@ -32,7 +32,7 @@ class Lecture(models.Model):
         return self.name
 
 class Test(models.Model):
-    question_count = models.IntegerField(null=False, default=0)
+    question_count = models.IntegerField(default=0)
     module = models.ForeignKey(Module)
     name = models.CharField(max_length=250)
     duration = models.IntegerField() # minutes
@@ -83,7 +83,7 @@ class Answer(models.Model):
 class TestResult(models.Model):
     test = models.ForeignKey(Test)
     user = models.ForeignKey(UserProfile)
-    passed = models.BooleanField(null=False, default=False)
+    passed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.login, self.test.name
@@ -91,7 +91,7 @@ class TestResult(models.Model):
 class CourseProgress(models.Model):
     user = models.ForeignKey(UserProfile)
     course = models.ForeignKey(Course)
-    progress = models.IntegerField(null=False, default=0) # between 0 and 100
+    progress = models.IntegerField(default=0) # between 0 and 100
 
     def __str__(self):
         return self.user.login, self.course.name
