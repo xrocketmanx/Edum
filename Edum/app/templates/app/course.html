@@ -1,0 +1,16 @@
+﻿{% extends "app/base.html" %}
+
+{% block main %}
+    <div class="overview">
+        <h1>{{ course.name }}</h1>
+        <p>{{ course.overview }}</p>
+        <hr>
+        <p>{{ course.duration }} hours</p>
+    </div>
+    <div class="test_list">
+        <p>Modules: </p>
+        {% for module in course.modules.all %}
+            <p><a href="{% url 'app.views.module' course.id module.id %}">{{ module.name }}</a></p>
+        {% endfor %}
+    </div>
+{% endblock %}

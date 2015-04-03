@@ -1,0 +1,10 @@
+﻿{% extends "app/base.html" %}
+
+{% block main %}
+    {% for course in courses %}
+        <div class="list_element">
+            <h1><a href="{% url 'app.views.course' course.id %}">{{ course.name }}</a></h1>
+        </div>
+        <marquee><img src="http://4.bp.blogspot.com/-Gax3VzpG6Ik/UIfN4YbHG4I/AAAAAAAAAh4/6V_XWzIrAoc/s1600/magicbirdfart.gif" /></marquee>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="{% static "app/content/site.css" %}">
+    <title>Edum</title>
+</head>
+<body>
+    <div class="header">
+        {% block header %}
+            <a href="{% url 'app.views.home' %}">Edum</a>
+            <a href="{% url 'app.views.courses' %}">Courses</a>
+        {% endblock %}
+    </div>
+    <div class="main">
+        {% block main %}
+        {% endblock %}
+    </div>
+    <div class="footer">
+        <a href="{% url 'app.views.contact' %}">Contacts</a>
+        <a href="{% url 'app.views.about' %}">About us</a>
+    </div>
+</body>
+</html>

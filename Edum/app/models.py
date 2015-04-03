@@ -14,11 +14,11 @@ class Course(models.Model):
         return self.name
     
 class Module(models.Model):
-    test_count = models.IntegerField(default=0) #nukk=false don needed
+    test_count = models.IntegerField(default=0) 
     lecture_count = models.IntegerField(default=0)
     name = models.CharField(max_length=250) 
     overview = models.TextField()
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, related_name = "modules")
 
     def __str__(self):
         return self.name

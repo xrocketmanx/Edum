@@ -51,6 +51,10 @@
     <Folder Include="Edum\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\templates\app\course.html" />
+    <Content Include="app\templates\app\courses.html" />
+    <Content Include="app\templates\app\base.html" />
+    <Content Include="app\templates\app\module.html" />
     <Content Include="db.sqlite3" />
     <Content Include="requirements.txt" />
     <Content Include="app\static\app\content\bootstrap.css" />
@@ -77,7 +81,7 @@
     <Content Include="app\static\app\scripts\_references.js" />
     <Content Include="app\templates\app\about.html" />
     <Content Include="app\templates\app\contact.html" />
-    <Content Include="app\templates\app\index.html" />
+    <Content Include="app\templates\app\home.html" />
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />
     <Content Include="app\templates\app\loginpartial.html" />

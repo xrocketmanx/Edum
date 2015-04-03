@@ -1,0 +1,11 @@
+﻿{% extends "app/base.html" %}
+
+{% block main %}
+    <div class="overview">
+        <h1>{{ module.name }}</h1>
+        <p>{{ module.overview }}</p>
+        <hr>
+        <p>{{ module.test_count }} tests</p>
+        <p>{{ module.lecture_count }} lectures</p>
+    </div>
+{% endblock %}

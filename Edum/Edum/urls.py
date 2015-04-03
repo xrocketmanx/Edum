@@ -12,11 +12,15 @@ from app.forms import BootstrapAuthenticationForm
 # from django.contrib import admin
 # admin.autodiscover()
 
+
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'app.views.home', name='home'),
     url(r'^contact$', 'app.views.contact', name='contact'),
     url(r'^about', 'app.views.about', name='about'),
+    url(r'^courses$', 'app.views.courses', name='courses'),
+    url(r'^courses/(?P<course_id>\d+)$', 'app.views.course', name='course'),
+    url(r'^courses/(?P<course_id>\d+)/modules/(?P<module_id>\d+)$', 'app.views.module', name='module'),
     url(r'^login/$',
         'django.contrib.auth.views.login',
         {
