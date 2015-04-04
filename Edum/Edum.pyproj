@@ -55,7 +55,7 @@
     <Content Include="app\templates\app\courses.html" />
     <Content Include="app\templates\app\base.html" />
     <Content Include="app\templates\app\lecture.html">
-      <Publish>True</Publish>
+      <Publish>False</Publish>
     </Content>
     <Content Include="app\templates\app\module.html" />
     <Content Include="app\templates\app\test.html" />
