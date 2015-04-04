@@ -10,8 +10,12 @@
 <body>
     <div class="header">
         {% block header %}
-            <a href="{% url 'app.views.home' %}">Edum</a>
-            <a href="{% url 'app.views.courses' %}">Courses</a>
+            <a href="{% url 'home' %}">Edum</a>
+            <a href="{% url 'courses' %}">Courses</a>
+        {% endblock %}
+    </div>
+    <div class="navigation">
+        {% block navigation %}
         {% endblock %}
     </div>
     <div class="main">
@@ -19,8 +23,8 @@
         {% endblock %}
     </div>
     <div class="footer">
-        <a href="{% url 'app.views.contact' %}">Contacts</a>
-        <a href="{% url 'app.views.about' %}">About us</a>
+        <a href="{% url 'contact' %}">Contacts</a>
+        <a href="{% url 'about' %}">About us</a>
     </div>
 </body>
 </html>

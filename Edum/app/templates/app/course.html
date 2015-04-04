@@ -7,10 +7,12 @@
         <hr>
         <p>{{ course.duration }} hours</p>
     </div>
-    <div class="test_list">
+    <div class="list">
         <p>Modules: </p>
         {% for module in course.modules.all %}
-            <p><a href="{% url 'app.views.module' course.id module.id %}">{{ module.name }}</a></p>
+            <div class="list_element_min">
+                <p><a href="{% url 'module' course.id module.id %}">{{ module.name }}</a></p>
+            </div>
         {% endfor %}
     </div>
 {% endblock %}

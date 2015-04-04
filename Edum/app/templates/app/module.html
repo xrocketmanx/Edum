@@ -8,4 +8,21 @@
         <p>{{ module.test_count }} tests</p>
         <p>{{ module.lecture_count }} lectures</p>
     </div>
+    
+    <div class="list">
+        <p>Lectures</p>
+        {% for lecture in module.lectures.all %}
+            <div class="list_element_min">
+                <a href="{% url 'lecture' module.course.id module.id lecture.id %}">{{ lecture.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="list">
+        <p>Tests</p>
+        {% for test in module.tests.all %}
+            <div class="list_element_min">
+                <a href="{% url 'test' module.course.id module.id test.id %}">{{ test.name }}</a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

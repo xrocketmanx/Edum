@@ -26,14 +26,14 @@ class Module(models.Model):
 class Lecture(models.Model):
     video_url = models.TextField()
     name = models.CharField(max_length=250)
-    module = models.ForeignKey(Module)
+    module = models.ForeignKey(Module, related_name = "lectures")
 
     def __str__(self):
         return self.name
 
 class Test(models.Model):
     question_count = models.IntegerField(default=0)
-    module = models.ForeignKey(Module)
+    module = models.ForeignKey(Module, related_name = "tests")
     name = models.CharField(max_length=250)
     duration = models.IntegerField() # minutes
 
@@ -67,14 +67,14 @@ class UserProfile(models.Model):
 class Question(models.Model):
     answer_count = models.IntegerField()
     question = models.TextField()
-    test = models.ForeignKey(Test)
+    test = models.ForeignKey(Test, related_name = "questions")
 
     def __str__(self):
         return self.question
 
 class Answer(models.Model):
     answer = models.TextField()
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, related_name = "answers")
     correct = models.BooleanField(default=False)
 
     def __str__(self):
