@@ -1,0 +1,10 @@
+﻿{% extends "base.html" %}
+
+{% block main %}
+    <form action="{% url 'merge_course' 'update' course_id %}" method="post">
+        {% csrf_token %}
+        {{ course_form }}
+        <input type="submit" />
+    </form>
+    <a href="{% url 'edit_modules' course_id %}">Modules</a>
+{% endblock %}

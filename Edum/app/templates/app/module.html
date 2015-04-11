@@ -1,12 +1,12 @@
-﻿{% extends "app/base.html" %}
+﻿{% extends "base.html" %}
 
 {% block main %}
     <div class="overview">
         <h1>{{ module.name }}</h1>
         <p>{{ module.overview }}</p>
         <hr>
-        <p>{{ module.test_count }} tests</p>
-        <p>{{ module.lecture_count }} lectures</p>
+        <p>{{ module.tests.count }} tests</p>
+        <p>{{ module.lectures.count }} lectures</p>
     </div>
     
     <div class="list">

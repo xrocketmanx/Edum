@@ -22,7 +22,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.join(PROJECT_ROOT, 'db.sqlite3'),
+        'NAME': path.join(PROJECT_ROOT, 'Edum.sqlite3'),
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
@@ -122,6 +122,9 @@ TEMPLATE_DIRS = (
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    path.join(PROJECT_ROOT, "Edum/templates"),
+    path.join(PROJECT_ROOT, "app/templates"),
+    path.join(PROJECT_ROOT, "editor/templates")
 )
 
 INSTALLED_APPS = (
@@ -133,6 +136,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'app',
+    'editor'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

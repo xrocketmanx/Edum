@@ -1,6 +1,4 @@
-"""
-Definition of views.
-"""
+# -*- encoding: utf-8 -*-
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
@@ -116,9 +114,3 @@ def about(request):
 
 
 
-def add_course(request):
-    if request.POST:
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            course = form.save()
-    return redirect("courses")

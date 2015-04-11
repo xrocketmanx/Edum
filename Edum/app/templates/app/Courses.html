@@ -1,15 +1,15 @@
-﻿{% extends "app/base.html" %}
+﻿{% extends "base.html" %}
 
 {% block main %}
     <div class="list">
         {% for course in courses %}
             <div class="list_element">
                 <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
+                <a href="{% url 'edit_course' course.id %}">edit</a>
             </div>
-            {#<marquee><img src="http://4.bp.blogspot.com/-Gax3VzpG6Ik/UIfN4YbHG4I/AAAAAAAAAh4/6V_XWzIrAoc/s1600/magicbirdfart.gif" /></marquee>#}
         {% endfor %}
     </div>
-    <form action="{% url 'add_course' %}" method="post">
+    <form action="{% url 'merge_course' 'add' None %}" method="post">
         {% csrf_token %}
         {{ course_form }}
         <input type="submit" />
