@@ -4,7 +4,11 @@
     <form action="{% url 'merge_course' 'update' course_id %}" method="post">
         {% csrf_token %}
         {{ course_form }}
-        <input type="submit" />
+        <input type="submit" value="Update"/>
+    </form>
+    <form action="{% url 'merge_course' 'delete' course_id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete" />
     </form>
     <a href="{% url 'edit_modules' course_id %}">Modules</a>
 {% endblock %}

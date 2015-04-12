@@ -21,3 +21,4 @@ class CourseForm(ModelForm):
     class Meta:
         model = Course
         fields = ['name', 'overview', 'duration']
+

@@ -22,3 +22,21 @@ class LectureForm(ModelForm):
     class Meta:
         model = Lecture
         fields = ['name', 'video_url']
+
+class TestForm(ModelForm):
+    
+    class Meta:
+        model = Test
+        fields = ['name', 'question_count', 'duration']
+
+class QuestionForm(ModelForm):
+
+    class Meta:
+        model = Question
+        fields = ['question', 'answer_count']
+
+class AnswerForm(ModelForm):
+
+    class Meta:
+        model = Answer
+        fields = ['answer', 'correct']

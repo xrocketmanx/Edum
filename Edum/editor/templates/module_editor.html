@@ -6,9 +6,14 @@
             <form action="{% url 'merge_module' course_id 'update' form.module_id %}" method="post">
                 {% csrf_token %}
                 {{ form }}
-                <input type="submit" />
+                <input type="submit" value="Update" />
+            </form>
+            <form action="{% url 'merge_module' course_id 'delete' form.module_id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Delete" />
             </form>
             <a href="{% url 'edit_lectures' course_id form.module_id %}">Lectures</a>
+            <a href="{% url 'edit_tests' course_id form.module_id %}">Tests</a>
         {% endfor %}
     </div>
     <form action="{% url 'merge_module' course_id 'add' None %}" method="post">

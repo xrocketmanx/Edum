@@ -9,52 +9,78 @@ from django.core.context_processors import csrf
 
 def merge_course(request, action, course_id):
     assert isinstance(request, HttpRequest)
-    if action=='add':
-        if request.POST:
+    if request.POST:
+        if action=='add':
             form = CourseForm(request.POST)
             if form.is_valid():
                 course = form.save()
-    if action=='update':
-        if request.POST:
+        if action=='update':
             course = get_object_or_404(Course, id=course_id)
             form = CourseForm(request.POST, instance=course)
             if form.is_valid():
                 form.save()
+        if action=='delete':
+            Course.objects.get(id=course_id).delete()
+            return redirect("/courses")
     return redirect("/editor/courses/%s" % (course.id))
 
 def merge_module(request, course_id, action, module_id):
     assert isinstance(request, HttpRequest)
-    if action=='add':
-        if request.POST:
+    if request.POST:
+        if action=='add':
             module = Module()
             module.name = request.POST['name']
             module.overview = request.POST['overview']
             module.course = get_object_or_404(Course, id=course_id)
             module.save()
-    if action=='update':
-        if request.POST:
+        if action=='update':
             module = get_object_or_404(Module, id=module_id)
             form = ModuleForm(request.POST, instance=module)
             if form.is_valid():
                 form.save()
+        if action=='delete':
+            Module.objects.get(id=module_id).delete()
     return redirect("/editor/courses/%s/modules" % (course_id))
 
 def merge_lecture(request, module_id, action, lecture_id):
     assert isinstance(request, HttpRequest)
-    if action=='add':
-        if request.POST:
+    if request.POST:
+        if action=='add':
             lecture = Lecture()
             lecture.name = request.POST['name']
             lecture.video_url = request.POST['video_url']
             lecture.module = get_object_or_404(Module, id=module_id)
             lecture.save()
-    if action=='update':
-        if request.POST:
+        if action=='update':
             lecture = get_object_or_404(Lecture, id=lecture_id)
             form = LectureForm(request.POST, instance=lecture)
             if form.is_valid():
                 form.save()
+        if action=='delete':
+            Lecture.objects.get(id=lecture_id).delete()
     return redirect("/editor/courses/%s/modules/%s/lectures" % (lecture.module.course.id, module_id))
+
+def merge_test(request, module_id, action, test_id):
+    assert isinstance(request, HttpRequest)
+    if request.POST:
+        if action=='add':
+            test = Test()
+            test.module = get_object_or_404(Module, id=module_id)
+            test.name = request.POST['name']
+            test.duration = request.POST['duration']
+            test.question_count = request.POST['question_count']
+            test.save()
+        if action=='update':
+            lecture = get_object_or_404(Lecture, id=lecture_id)
+            form = LectureForm(request.POST, instance=lecture)
+            if form.is_valid():
+                form.save()
+        if action=='delete':
+            Test.objects.get(id=test_id).delete()
+            return redirect("/editor/courses/%s/modules/%s/tests" % (test.module.course.id, module_id))
+    return redirect("/editor/courses/%s/modules/%s/tests/%s" % (test.module.course.id, module_id, test.id))
+
+# 
 
 def edit_course(request, course_id):
     assert isinstance(request, HttpRequest)
@@ -103,6 +129,44 @@ def edit_lectures(request, course_id, module_id):
             'forms': forms,
             'module_id': module_id,
             'lecture_form': LectureForm,
+            'csrf_token': csrf(request),
+        })
+    )
+
+def edit_tests(request, course_id, module_id):
+    assert isinstance(request, HttpRequest)
+    tests = Test.objects.filter(module_id=module_id)
+    forms = [ TestForm(instance=test) for test in tests ]
+    for test, form in zip(tests, forms):
+        form.test_id = test.id
+    return render(
+        request,
+        'tests_editor.html',
+        context_instance = RequestContext(request,
+        {
+            'forms': forms,
+            'course_id': course_id,
+            'module_id': module_id,
+            'test_form': TestForm,
+            'csrf_token': csrf(request),
+        })
+    )
+
+def edit_test(request, course_id, module_id, test_id):
+    assert isinstance(request, HttpRequest)
+    test = get_object_or_404(Test, id=test_id)
+    test_form = TestForm(instance=test)
+    test_form.test_id = test_id
+    return render(
+        request,
+        'test_editor.html',
+        context_instance = RequestContext(request,
+        {
+            'test_form': test_form,
+            'course_id': course_id,
+            'module_id': module_id,
+            'question_form': QuestionForm,
+            'answer_form': AnswerForm,
             'csrf_token': csrf(request),
         })
     )

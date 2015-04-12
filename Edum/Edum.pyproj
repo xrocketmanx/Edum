@@ -69,6 +69,8 @@
   <ItemGroup>
     <Content Include="app\templates\app\course.html" />
     <Content Include="app\templates\app\courses.html" />
+    <Content Include="editor\templates\tests_editor.html" />
+    <Content Include="editor\templates\test_editor.html" />
     <Content Include="Edum\templates\base.html" />
     <Content Include="editor\templates\course_editor.html" />
     <Content Include="app\templates\app\lecture.html">
