@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
@@ -28,11 +27,11 @@ def merge_module(request, course_id, action, module_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
         if action=='add':
-            module = Module()
-            module.name = request.POST['name']
-            module.overview = request.POST['overview']
-            module.course = get_object_or_404(Course, id=course_id)
-            module.save()
+            form = ModuleForm(request.POST)
+            if form.is_valid():
+                module = form.save(commit=False)
+                module.course = get_object_or_404(Course, id=course_id)
+                module.save()
         if action=='update':
             module = get_object_or_404(Module, id=module_id)
             form = ModuleForm(request.POST, instance=module)
@@ -46,11 +45,11 @@ def merge_lecture(request, module_id, action, lecture_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
         if action=='add':
-            lecture = Lecture()
-            lecture.name = request.POST['name']
-            lecture.video_url = request.POST['video_url']
-            lecture.module = get_object_or_404(Module, id=module_id)
-            lecture.save()
+            form = LectureForm(request.POST)
+            if form.is_valid():
+                lecture = form.save(commit=False)
+                lecture.module = get_object_or_404(Module, id=module_id)
+                lecture.save()
         if action=='update':
             lecture = get_object_or_404(Lecture, id=lecture_id)
             form = LectureForm(request.POST, instance=lecture)
@@ -64,17 +63,17 @@ def merge_test(request, module_id, action, test_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
         if action=='add':
-            test = Test()
-            test.module = get_object_or_404(Module, id=module_id)
-            test.name = request.POST['name']
-            test.duration = request.POST['duration']
-            test.question_count = request.POST['question_count']
-            test.save()
-        if action=='update':
-            lecture = get_object_or_404(Lecture, id=lecture_id)
-            form = LectureForm(request.POST, instance=lecture)
+            form = TestForm(request.POST)
             if form.is_valid():
-                form.save()
+                test = form.save(commit=False)
+                test.module = get_object_or_404(Module, id=module_id)
+                test.save()
+        if action=='update':
+            #lecture = get_object_or_404(Lecture, id=lecture_id)
+            #form = LectureForm(request.POST, instance=lecture)
+            #if form.is_valid():
+            #    form.save()
+            pass
         if action=='delete':
             Test.objects.get(id=test_id).delete()
             return redirect("/editor/courses/%s/modules/%s/tests" % (test.module.course.id, module_id))

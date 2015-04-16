@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+
 {% if user.is_authenticated %}
 <form id="logoutForm" action="/logout" method="post" class="navbar-right">
     {% csrf_token %}

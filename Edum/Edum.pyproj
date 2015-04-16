@@ -51,6 +51,16 @@
     <Compile Include="Edum\settings.py" />
     <Compile Include="Edum\urls.py" />
     <Compile Include="Edum\wsgi.py" />
+    <Compile Include="usersys\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="usersys\models.py" />
+    <Compile Include="usersys\tests.py" />
+    <Compile Include="usersys\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="usersys\views.py" />
+    <Compile Include="usersys\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app\" />
@@ -64,13 +74,41 @@
     <Folder Include="editor\" />
     <Folder Include="editor\templates\" />
     <Folder Include="Edum\" />
+    <Folder Include="Edum\static\" />
+    <Folder Include="Edum\static\content\" />
+    <Folder Include="Edum\static\fonts\" />
+    <Folder Include="Edum\static\scripts\" />
     <Folder Include="Edum\templates\" />
+    <Folder Include="usersys\" />
+    <Folder Include="usersys\templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\templates\app\course.html" />
     <Content Include="app\templates\app\courses.html" />
     <Content Include="editor\templates\tests_editor.html" />
     <Content Include="editor\templates\test_editor.html" />
+    <Content Include="Edum\static\content\bootstrap.css" />
+    <Content Include="Edum\static\content\bootstrap.min.css" />
+    <Content Include="Edum\static\content\site.css" />
+    <Content Include="Edum\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Edum\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Edum\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Edum\static\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Edum\static\scripts\_references.js" />
+    <Content Include="Edum\static\scripts\bootstrap.js" />
+    <Content Include="Edum\static\scripts\bootstrap.min.js" />
+    <None Include="Edum\static\scripts\jquery.validate-vsdoc.js" />
+    <None Include="Edum\static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Edum\static\scripts\jquery-1.10.2.js" />
+    <Content Include="Edum\static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="Edum\static\scripts\jquery-1.10.2.min.map" />
+    <Content Include="Edum\static\scripts\jquery.validate.js" />
+    <Content Include="Edum\static\scripts\jquery.validate.min.js" />
+    <Content Include="Edum\static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Edum\static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Edum\static\scripts\modernizr-2.6.2.js" />
+    <Content Include="Edum\static\scripts\respond.js" />
+    <Content Include="Edum\static\scripts\respond.min.js" />
     <Content Include="Edum\templates\base.html" />
     <Content Include="editor\templates\course_editor.html" />
     <Content Include="app\templates\app\lecture.html">
@@ -107,8 +145,8 @@
     <Content Include="app\templates\app\contact.html" />
     <Content Include="app\templates\app\home.html" />
     <Content Include="app\templates\app\layout.html" />
-    <Content Include="app\templates\app\login.html" />
-    <Content Include="app\templates\app\loginpartial.html" />
+    <Content Include="usersys\templates\login.html" />
+    <Content Include="usersys\templates\loginpartial.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.mht">
