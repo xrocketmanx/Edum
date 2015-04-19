@@ -5,6 +5,7 @@ from django.template import RequestContext
 from app.models import *
 from editor.forms import *
 from django.core.context_processors import csrf
+from usersys.views import login_partial
 
 def merge_course(request, action, course_id):
     assert isinstance(request, HttpRequest)
@@ -93,6 +94,7 @@ def edit_course(request, course_id):
             'course_form': course_form,
             'course_id': course_id,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -111,6 +113,7 @@ def edit_modules(request, course_id):
             'course_id': course_id,
             'module_form': ModuleForm,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -129,6 +132,7 @@ def edit_lectures(request, course_id, module_id):
             'module_id': module_id,
             'lecture_form': LectureForm,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -148,6 +152,7 @@ def edit_tests(request, course_id, module_id):
             'module_id': module_id,
             'test_form': TestForm,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -167,5 +172,6 @@ def edit_test(request, course_id, module_id, test_id):
             'question_form': QuestionForm,
             'answer_form': AnswerForm,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )

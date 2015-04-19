@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Answer',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('answer', models.TextField()),
                 ('correct', models.BooleanField(default=False)),
             ],
@@ -26,11 +26,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Course',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('name', models.CharField(max_length=250)),
                 ('overview', models.TextField()),
                 ('duration', models.IntegerField()),
-                ('author', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
@@ -39,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CourseProgress',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('progress', models.IntegerField(default=0)),
                 ('course', models.ForeignKey(to='app.Course')),
             ],
@@ -50,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Lecture',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('video_url', models.TextField()),
                 ('name', models.CharField(max_length=250)),
             ],
@@ -61,12 +60,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Module',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('test_count', models.IntegerField(default=0)),
                 ('lecture_count', models.IntegerField(default=0)),
                 ('name', models.CharField(max_length=250)),
                 ('overview', models.TextField()),
-                ('course', models.ForeignKey(to='app.Course')),
+                ('course', models.ForeignKey(related_name='modules', to='app.Course')),
             ],
             options={
             },
@@ -75,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Question',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('answer_count', models.IntegerField()),
                 ('question', models.TextField()),
             ],
@@ -86,11 +85,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Test',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('question_count', models.IntegerField(default=0)),
                 ('name', models.CharField(max_length=250)),
                 ('duration', models.IntegerField()),
-                ('module', models.ForeignKey(to='app.Module')),
+                ('module', models.ForeignKey(related_name='tests', to='app.Module')),
             ],
             options={
             },
@@ -99,7 +98,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TestResult',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('passed', models.BooleanField(default=False)),
                 ('test', models.ForeignKey(to='app.Test')),
             ],
@@ -110,11 +109,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
-                ('first_name', models.CharField(max_length=40)),
-                ('second_name', models.CharField(max_length=40)),
-                ('login', models.CharField(max_length=16)),
-                ('password', models.CharField(max_length=16)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('courses_results', models.ManyToManyField(to='app.Course', through='app.CourseProgress')),
                 ('signed_courses', models.ManyToManyField(related_name='signed_courses', to='app.Course')),
                 ('tests_results', models.ManyToManyField(to='app.Test', through='app.TestResult')),
@@ -133,13 +128,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='test',
-            field=models.ForeignKey(to='app.Test'),
+            field=models.ForeignKey(related_name='questions', to='app.Test'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='lecture',
             name='module',
-            field=models.ForeignKey(to='app.Module'),
+            field=models.ForeignKey(related_name='lectures', to='app.Module'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -149,9 +144,15 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
+            model_name='course',
+            name='author',
+            field=models.ForeignKey(related_name='courses', to='app.UserProfile', default=0),
+            preserve_default=True,
+        ),
+        migrations.AddField(
             model_name='answer',
             name='question',
-            field=models.ForeignKey(to='app.Question'),
+            field=models.ForeignKey(related_name='answers', to='app.Question'),
             preserve_default=True,
         ),
     ]

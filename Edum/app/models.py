@@ -6,10 +6,6 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user_auth = models.OneToOneField(User)
-    first_name = models.CharField(max_length=40)
-    second_name = models.CharField(max_length=40)
-    login = models.CharField(max_length=16)
-    password = models.CharField(max_length=16)
     tests_results = models.ManyToManyField(
         'Test',
         through="TestResult",

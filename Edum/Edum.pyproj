@@ -94,6 +94,9 @@
     <Content Include="Edum\static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Edum\static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Edum\static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="usersys\templates\login.html" />
+    <Content Include="usersys\templates\loginpartial.html" />
+    <Content Include="usersys\templates\register.html" />
     <None Include="Edum\static\scripts\_references.js" />
     <Content Include="Edum\static\scripts\bootstrap.js" />
     <Content Include="Edum\static\scripts\bootstrap.min.js" />
@@ -145,8 +148,6 @@
     <Content Include="app\templates\app\contact.html" />
     <Content Include="app\templates\app\home.html" />
     <Content Include="app\templates\app\layout.html" />
-    <Content Include="usersys\templates\login.html" />
-    <Content Include="usersys\templates\loginpartial.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.mht">

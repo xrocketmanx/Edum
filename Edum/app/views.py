@@ -6,6 +6,7 @@ from datetime import datetime
 from app.models import *
 from app.forms import *
 from django.core.context_processors import csrf
+from usersys.views import login_partial
 
 def courses(request):
     assert isinstance(request, HttpRequest)
@@ -17,6 +18,7 @@ def courses(request):
             'courses': Course.objects.all(),
             'course_form': CourseForm,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -28,7 +30,8 @@ def course(request, course_id):
         'app/course.html',
         context_instance = RequestContext(request,
         {
-            'course': course
+            'course': course,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -42,7 +45,8 @@ def module(request, course_id, module_id):
         'app/module.html',
         context_instance = RequestContext(request,
         {
-            'module': module
+            'module': module,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -58,7 +62,8 @@ def lecture(request, course_id, module_id, lecture_id):
         'app/lecture.html',
         context_instance = RequestContext(request,
         {
-            'lecture': lecture
+            'lecture': lecture,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -74,7 +79,8 @@ def test(request, course_id, module_id, test_id):
         'app/test.html',
         context_instance = RequestContext(request,
         {
-            'test': test
+            'test': test,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -88,6 +94,7 @@ def home(request):
         {
             'title':'Home Page',
             'year':datetime.now().year,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -100,6 +107,7 @@ def contact(request):
         context_instance = RequestContext(request,
         {
             'time':datetime.now(),
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -108,7 +116,11 @@ def about(request):
     assert isinstance(request, HttpRequest)
     return render(
         request,
-        'app/about.html'
+        'app/about.html',
+        context_instance = RequestContext(request,
+        {
+            'loginpartial': login_partial(request),
+        })
     )
 
 
