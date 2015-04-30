@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
-    user_auth = models.OneToOneField(User)
+    user = models.OneToOneField(User)
     tests_results = models.ManyToManyField(
         'Test',
         through="TestResult",
@@ -22,7 +22,7 @@ class UserProfile(models.Model):
     )
 
     def __str__(self):
-        return self.login
+        return self.user.username
 
 class Course(models.Model):
     name = models.CharField(max_length=250)

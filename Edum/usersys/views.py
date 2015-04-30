@@ -5,8 +5,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from usersys.forms import RegistrationForm
+from usersys.forms import RegistrationForm, ConfirmationToken
 
 def login(request):
     if request.POST:
@@ -61,3 +62,12 @@ def logout(request):
     if request.POST:
        django_logout(request)
     return redirect("/") 
+
+def user_confirmation(request, user_id, token):
+    user = get_object_or_404(User, id=user_id)
+    confirmation_token = user.user_token
+    if confirmation_token.token == token:
+        confirmation_token.delete()
+        user.is_active = True
+        return redirect("/courses")
+    return redirect("/")
