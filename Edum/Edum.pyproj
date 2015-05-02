@@ -99,6 +99,7 @@
     <Content Include="usersys\templates\login.html" />
     <Content Include="usersys\templates\loginpartial.html" />
     <Content Include="usersys\templates\register.html" />
+    <Content Include="usersys\templates\success.html" />
     <None Include="Edum\static\scripts\_references.js" />
     <Content Include="Edum\static\scripts\bootstrap.js" />
     <Content Include="Edum\static\scripts\bootstrap.min.js" />

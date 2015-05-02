@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from Edum.settings import TOKEN_LENGTH, EMAIL_HOST_USER
 from app.models import UserProfile
 from usersys.models import ConfirmationToken
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 #class BootstrapAuthenticationForm(AuthenticationForm):
 #    """Authentication form which uses boostrap CSS."""
@@ -46,3 +47,22 @@ class RegistrationForm(UserCreationForm):
             fail_silently=False
         )
         return user
+
+    def is_valid(self):
+        valid = super(RegistrationForm, self).is_valid()
+        if not valid:
+            raise ValidationError('Wrong login or password!')
+        email = self.cleaned_data['email']
+        if email is "":
+            raise ValidationError('Enter email please!')
+        user = self.get_user_or_None(email)
+        if user is not None:
+            raise ValidationError('User with this email already exists!')
+        return True
+        
+    def get_user_or_None(self, email):
+        try:
+            user = User.objects.get(email=email)
+            return user
+        except ObjectDoesNotExist:
+            return None
