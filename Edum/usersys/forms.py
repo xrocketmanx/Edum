@@ -28,8 +28,10 @@ class RegistrationForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
 
     def save(self, commit = True):
-        user = super(RegistrationForm, self).save(commit)
+        user = super(RegistrationForm, self).save(commit=False)
         user.is_active = False
+        if commit:
+            user.save()
         user_profile = UserProfile()
         user_profile.user = user
         user_profile.save()
@@ -43,7 +45,7 @@ class RegistrationForm(UserCreationForm):
             'Edum registration', 
             'http://localhost:8085/users/%s/token/%s' % (user.id,confirmation_token.token),
             EMAIL_HOST_USER,
-            [user.email, EMAIL_HOST_USER],
+            [user.email],
             fail_silently=False
         )
         return user
@@ -66,3 +68,25 @@ class RegistrationForm(UserCreationForm):
             return user
         except ObjectDoesNotExist:
             return None
+
+class Petition(forms.Form):
+    field_of_study = forms.CharField(max_length=250)
+    university_representative = forms.CharField(max_length=250)
+    work_experience = forms.Textarea()
+
+    def submit(self, username):
+        send_mail(
+            'Teacher petition', 
+            ("%s, requested a petition with following explanations:\n "
+            "Field of study: %s\n"
+            "University that he represents: %s"
+            "Work experience: %s") % (
+                username, 
+                self.cleaned_data['field_of_study'],
+                self.cleaned_data['university_representative'],
+                self.cleaned_data['work_experience']
+            ),
+            EMAIL_HOST_USER,
+            [EMAIL_HOST_USER],
+            fail_silently=False
+        )

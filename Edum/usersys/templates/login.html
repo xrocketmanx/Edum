@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
+    <p>{{ message }}</p>
 
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}

@@ -1,4 +1,3 @@
-# Create your views here.
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.core.context_processors import csrf
@@ -8,9 +7,10 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from usersys.forms import RegistrationForm, ConfirmationToken
+from usersys.forms import RegistrationForm, ConfirmationToken#, PetitionForm
 
 def login(request):
+    message = ""
     if request.POST:
         username = request.POST['username']
         password = request.POST['password']
@@ -18,30 +18,30 @@ def login(request):
         if user is not None:
             if user.is_active:
                 django_login(request, user)
-                return redirect("/")
-                # Redirect to a success page.
+                return redirect("home")
             else:
-                return redirect("/users/login")
-                # Return a 'disabled account' error message
+                message = "You need to confirm your email."
         else:
-            return redirect("/users/login")
-            # Return an 'invalid login' error message.
+            message = "Wrong credentials, try again."
     return render(request,
         'login.html',
         context_instance = RequestContext(request,
         {
             'form': AuthenticationForm,
             'csrf_token': csrf(request),
+            'message': message
          }))
 
-def register(request): # Check if user is not logged
+def register(request):
+    if request.user.is_authenticated():
+        return redirect("courses") # or user profile
     message = ""
     if request.POST:
         form = RegistrationForm(request.POST)
         try:
             if form.is_valid():
                 form.save()
-                return redirect("/users/success")
+                return redirect("success")
         except ValidationError as error:
             message = error.args[0]
     return render(request,
@@ -64,7 +64,7 @@ def login_partial(request):
 def logout(request):
     if request.POST:
        django_logout(request)
-    return redirect("/") 
+    return redirect("home") 
 
 def user_confirmation(request, user_id, token):
     user = get_object_or_404(User, id=user_id)
@@ -72,16 +72,23 @@ def user_confirmation(request, user_id, token):
     if confirmation_token.token == token:
         confirmation_token.delete()
         user.is_active = True
-        return redirect("/login") # To user profile
-    return redirect("/")
+        return redirect("login") 
+    return redirect("home")
 
 def success(request):
     user = request.user
-    active = user.is_active
-    if user.is_authenticated() or active:
-        return redirect("/courses") # To user profile
+    if user.is_authenticated():
+        return redirect("courses")
     return render(request,
         'success.html',
         context_instance = RequestContext(request,
         {
+         }))
+
+def petition(request):
+    return render(request,
+        'petition.html',
+        context_instance = RequestContext(request,
+        {
+            'petition_form': PetitionForm
          }))
