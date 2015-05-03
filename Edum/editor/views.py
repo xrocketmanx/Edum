@@ -6,7 +6,9 @@ from app.models import *
 from editor.forms import *
 from django.core.context_processors import csrf
 from usersys.views import login_partial
+from django.contrib.auth.decorators import login_required
 
+@login_required()
 def merge_course(request, action, course_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
@@ -24,6 +26,7 @@ def merge_course(request, action, course_id):
             return redirect("courses")
     return redirect("edit_course", course_id=course.id)
 
+@login_required()
 def merge_module(request, course_id, action, module_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
@@ -42,6 +45,7 @@ def merge_module(request, course_id, action, module_id):
             Module.objects.get(id=module_id).delete()
     return redirect("edit_modules", course_id=course_id)
 
+@login_required()
 def merge_lecture(request, module_id, action, lecture_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
@@ -60,6 +64,7 @@ def merge_lecture(request, module_id, action, lecture_id):
             Lecture.objects.get(id=lecture_id).delete()
     return redirect("edit_lectures", course_id=lecture.module.course.id, module_id=module_id)
 
+@login_required()
 def merge_test(request, module_id, action, test_id):
     assert isinstance(request, HttpRequest)
     if request.POST:
@@ -80,7 +85,10 @@ def merge_test(request, module_id, action, test_id):
             return redirect("edit_tests", course_id=test.module.course.id, module_id=module_id)
     return redirect("edit_test", course_id=test.module.course.id, module_id=module_id, test_id=test.id)
 
-#
+
+
+
+@login_required()
 def edit_course(request, course_id):
     assert isinstance(request, HttpRequest)
     course = get_object_or_404(Course, id=course_id)
@@ -95,6 +103,7 @@ def edit_course(request, course_id):
             'loginpartial': login_partial(request),
         }))
 
+@login_required()
 def edit_modules(request, course_id):
     assert isinstance(request, HttpRequest)
     modules = Module.objects.filter(course_id=course_id)
@@ -112,6 +121,7 @@ def edit_modules(request, course_id):
             'loginpartial': login_partial(request),
         }))
 
+@login_required()
 def edit_lectures(request, course_id, module_id):
     assert isinstance(request, HttpRequest)
     lectures = Lecture.objects.filter(module_id=module_id)
@@ -129,6 +139,7 @@ def edit_lectures(request, course_id, module_id):
             'loginpartial': login_partial(request),
         }))
 
+@login_required()
 def edit_tests(request, course_id, module_id):
     assert isinstance(request, HttpRequest)
     tests = Test.objects.filter(module_id=module_id)
@@ -147,6 +158,7 @@ def edit_tests(request, course_id, module_id):
             'loginpartial': login_partial(request),
         }))
 
+@login_required()
 def edit_test(request, course_id, module_id, test_id):
     assert isinstance(request, HttpRequest)
     test = get_object_or_404(Test, id=test_id)

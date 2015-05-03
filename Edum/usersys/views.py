@@ -4,10 +4,11 @@ from django.core.context_processors import csrf
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from usersys.forms import RegistrationForm, ConfirmationToken#, PetitionForm
+from usersys.forms import RegistrationForm, ConfirmationToken, PetitionForm
 
 def login(request):
     message = ""
@@ -61,6 +62,7 @@ def login_partial(request):
             'csrf_token': csrf(request),
         }))
 
+@login_required()
 def logout(request):
     if request.POST:
        django_logout(request)
@@ -85,10 +87,22 @@ def success(request):
         {
          }))
 
+@login_required(login_url="login")
 def petition(request):
+    message = None
+    if request.POST:
+        form = PetitionForm(request.POST)
+        message = "Something went wrong"
+        if form.is_valid():
+            form.submit(request.user.username)
+            message = "Successfuly sent petition"
     return render(request,
         'petition.html',
         context_instance = RequestContext(request,
         {
-            'petition_form': PetitionForm
-         }))
+            'form': PetitionForm, 
+            'message': message,
+            'csrf_token': csrf(request),
+        }
+        )
+    )

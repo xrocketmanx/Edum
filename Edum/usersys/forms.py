@@ -69,17 +69,18 @@ class RegistrationForm(UserCreationForm):
         except ObjectDoesNotExist:
             return None
 
-class Petition(forms.Form):
+class PetitionForm(forms.Form):
     field_of_study = forms.CharField(max_length=250)
     university_representative = forms.CharField(max_length=250)
-    work_experience = forms.Textarea()
+    work_experience = forms.CharField(widget=forms.Textarea())
 
+    # add accept and decline urls
     def submit(self, username):
         send_mail(
             'Teacher petition', 
-            ("%s, requested a petition with following explanations:\n "
+            ("%s, requested a petition with following explanations:\n"
             "Field of study: %s\n"
-            "University that he represents: %s"
+            "University that he represents: %s\n"
             "Work experience: %s") % (
                 username, 
                 self.cleaned_data['field_of_study'],

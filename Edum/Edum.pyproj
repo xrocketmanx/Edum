@@ -98,6 +98,7 @@
     <Content Include="Edum\static\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="usersys\templates\login.html" />
     <Content Include="usersys\templates\loginpartial.html" />
+    <Content Include="usersys\templates\petition.html" />
     <Content Include="usersys\templates\register.html" />
     <Content Include="usersys\templates\success.html" />
     <None Include="Edum\static\scripts\_references.js" />

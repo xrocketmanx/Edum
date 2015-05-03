@@ -5,6 +5,7 @@ from django.template import RequestContext
 from datetime import datetime
 from app.models import *
 from app.forms import *
+from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
 from usersys.views import login_partial
 
@@ -35,6 +36,7 @@ def course(request, course_id):
         })
     )
 
+@login_required()
 def module(request, course_id, module_id):
     assert isinstance(request, HttpRequest)
     module = get_object_or_404(Module, id=module_id)
@@ -50,6 +52,7 @@ def module(request, course_id, module_id):
         })
     )
 
+@login_required()
 def lecture(request, course_id, module_id, lecture_id):
     assert isinstance(request, HttpRequest)
     lecture = get_object_or_404(Lecture, id=lecture_id)
@@ -67,6 +70,7 @@ def lecture(request, course_id, module_id, lecture_id):
         })
     )
 
+@login_required()
 def test(request, course_id, module_id, test_id):
     assert isinstance(request, HttpRequest)
     test = get_object_or_404(Test, id=test_id)
