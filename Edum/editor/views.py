@@ -7,10 +7,13 @@ from editor.forms import *
 from django.core.context_processors import csrf
 from usersys.views import login_partial
 from django.contrib.auth.decorators import login_required
+from usersys.views import group_required
+from django.views.generic.base import View, TemplateView
+from django.views.generic.edit import FormView
+from django.utils.decorators import method_decorator
 
-@login_required()
+@group_required('teachers')
 def merge_course(request, action, course_id):
-    assert isinstance(request, HttpRequest)
     if request.POST:
         if action == 'add':
             form = CourseForm(request.POST)
@@ -26,9 +29,8 @@ def merge_course(request, action, course_id):
             return redirect("courses")
     return redirect("edit_course", course_id=course.id)
 
-@login_required()
+@group_required('teachers')
 def merge_module(request, course_id, action, module_id):
-    assert isinstance(request, HttpRequest)
     if request.POST:
         if action == 'add':
             form = ModuleForm(request.POST)
@@ -45,9 +47,8 @@ def merge_module(request, course_id, action, module_id):
             Module.objects.get(id=module_id).delete()
     return redirect("edit_modules", course_id=course_id)
 
-@login_required()
+@group_required('teachers')
 def merge_lecture(request, module_id, action, lecture_id):
-    assert isinstance(request, HttpRequest)
     if request.POST:
         if action == 'add':
             form = LectureForm(request.POST)
@@ -64,9 +65,8 @@ def merge_lecture(request, module_id, action, lecture_id):
             Lecture.objects.get(id=lecture_id).delete()
     return redirect("edit_lectures", course_id=lecture.module.course.id, module_id=module_id)
 
-@login_required()
+@group_required('teachers')
 def merge_test(request, module_id, action, test_id):
-    assert isinstance(request, HttpRequest)
     if request.POST:
         if action == 'add':
             form = TestForm(request.POST)
@@ -85,63 +85,82 @@ def merge_test(request, module_id, action, test_id):
             return redirect("edit_tests", course_id=test.module.course.id, module_id=module_id)
     return redirect("edit_test", course_id=test.module.course.id, module_id=module_id, test_id=test.id)
 
+class EditCourse(TemplateView):
+    template_name = 'course_editor.html'
+    form_class = CourseForm
 
+    def get(self, request, *args, **kwargs):
+        form = self.get_form(kwargs['course_id'])
+        return self.render_to_response(
+            self.get_context_data(
+                course_form=form, 
+                course_id=kwargs['course_id'],
+                loginpartial=login_partial(request)
+            )
+        )
 
+    def get_form(self, course_id):
+        course = get_object_or_404(Course, id=course_id)
+        return self.form_class(instance=course)
 
-@login_required()
-def edit_course(request, course_id):
-    assert isinstance(request, HttpRequest)
-    course = get_object_or_404(Course, id=course_id)
-    course_form = CourseForm(instance=course)
-    return render(request,
-        'course_editor.html',
-        context_instance = RequestContext(request,
-        {
-            'course_form': course_form,
-            'course_id': course_id,
-            'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
-        }))
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
-@login_required()
-def edit_modules(request, course_id):
-    assert isinstance(request, HttpRequest)
-    modules = Module.objects.filter(course_id=course_id)
-    forms = [ ModuleForm(instance=module) for module in modules ]
-    for module, form in zip(modules, forms):
-        form.module_id = module.id
-    return render(request,
-        'module_editor.html',
-        context_instance = RequestContext(request,
-        {
-            'forms': forms,
-            'course_id': course_id,
-            'module_form': ModuleForm,
-            'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
-        }))
+class EditModules(TemplateView):
+    form_class = ModuleForm
+    template_name = 'module_editor.html'
 
-@login_required()
-def edit_lectures(request, course_id, module_id):
-    assert isinstance(request, HttpRequest)
-    lectures = Lecture.objects.filter(module_id=module_id)
-    forms = [ LectureForm(instance=lecture) for lecture in lectures ]
-    for lecture, form in zip(lectures, forms):
-        form.lecture_id = lecture.id
-    return render(request,
-        'lecture_editor.html',
-        context_instance = RequestContext(request,
-        {
-            'forms': forms,
-            'module_id': module_id,
-            'lecture_form': LectureForm,
-            'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
-        }))
+    def get(self, request, *args, **kwargs):
+        forms = self.get_forms(kwargs['course_id'])
+        return self.render_to_response(
+            self.get_context_data(
+                forms=forms,
+                module_form=self.form_class, 
+                course_id=kwargs['course_id'],
+                loginpartial=login_partial(request)
+            )
+        )
 
-@login_required()
+    def get_forms(self, course_id):
+        modules = Module.objects.filter(course_id=course_id)
+        forms = [ ModuleForm(instance=module) for module in modules ]
+        for module, form in zip(modules, forms):
+            form.module_id = module.id
+        return forms
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class EditLectures(TemplateView):
+    form_class = LectureForm
+    template_name = 'lecture_editor.html'
+
+    def get(self, request, *args, **kwargs):
+        forms = self.get_forms(kwargs['module_id'])
+        return self.render_to_response(
+            self.get_context_data(
+                forms=forms,
+                lecture_form=self.form_class, 
+                module_id=kwargs['module_id'],
+                loginpartial=login_partial(request)
+            )
+        )
+ 
+    def get_forms(self, module_id):
+        lectures = Lecture.objects.filter(module_id=module_id)
+        forms = [ LectureForm(instance=lecture) for lecture in lectures ]
+        for lecture, form in zip(lectures, forms):
+            form.lecture_id = lecture.id
+        return forms
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+@group_required('teachers')
 def edit_tests(request, course_id, module_id):
-    assert isinstance(request, HttpRequest)
     tests = Test.objects.filter(module_id=module_id)
     forms = [ TestForm(instance=test) for test in tests ]
     for test, form in zip(tests, forms):
@@ -158,9 +177,8 @@ def edit_tests(request, course_id, module_id):
             'loginpartial': login_partial(request),
         }))
 
-@login_required()
+@group_required('teachers')
 def edit_test(request, course_id, module_id, test_id):
-    assert isinstance(request, HttpRequest)
     test = get_object_or_404(Test, id=test_id)
     test_form = TestForm(instance=test)
     test_form.test_id = test_id

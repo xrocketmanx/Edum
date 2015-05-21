@@ -10,17 +10,6 @@ from app.models import UserProfile
 from usersys.models import ConfirmationToken
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-#class BootstrapAuthenticationForm(AuthenticationForm):
-#    """Authentication form which uses boostrap CSS."""
-#    username = forms.CharField(max_length=254,
-#                               widget=forms.TextInput({
-#                                   'class': 'form-control',
-#                                   'placeholder': 'User name'}))
-#    password = forms.CharField(label=_("Password"),
-#                               widget=forms.PasswordInput({
-#                                   'class': 'form-control',
-#                                   'placeholder':'Password'}))
-
 class RegistrationForm(UserCreationForm):
 
     class Meta:
@@ -29,18 +18,9 @@ class RegistrationForm(UserCreationForm):
 
     def save(self, commit = True):
         user = super(RegistrationForm, self).save(commit=False)
-        user.is_active = False
-        if commit:
-            user.save()
-        user_profile = UserProfile()
-        user_profile.user = user
-        user_profile.save()
+        self.save_user(user, commit)
+        self.create_token(user)
 
-        confirmation_token = ConfirmationToken()
-        confirmation_token.user = user
-        confirmation_token.expiry_date = datetime.now() + timedelta(days=2)
-        confirmation_token.token = get_random_string(length=TOKEN_LENGTH)
-        confirmation_token.save()
         send_mail(
             'Edum registration', 
             'http://localhost:8085/users/%s/token/%s' % (user.id,confirmation_token.token),
@@ -50,6 +30,21 @@ class RegistrationForm(UserCreationForm):
         )
         return user
 
+    def save_user(self, user, commit):
+        user.is_active = False
+        if commit:
+            user.save()
+        user_profile = UserProfile()
+        user_profile.user = user
+        user_profile.save()
+
+    def create_token(self, user):
+        confirmation_token = ConfirmationToken()
+        confirmation_token.user = user
+        confirmation_token.expiry_date = datetime.now() + timedelta(days=2)
+        confirmation_token.token = get_random_string(length=TOKEN_LENGTH)
+        confirmation_token.save()
+
     def is_valid(self):
         valid = super(RegistrationForm, self).is_valid()
         if not valid:
@@ -57,35 +52,31 @@ class RegistrationForm(UserCreationForm):
         email = self.cleaned_data['email']
         if email is "":
             raise ValidationError('Enter email please!')
-        user = self.get_user_or_None(email)
-        if user is not None:
+        user = User.objects.filter(email=email)
+        if len(user) > 0:
             raise ValidationError('User with this email already exists!')
         return True
-        
-    def get_user_or_None(self, email):
-        try:
-            user = User.objects.get(email=email)
-            return user
-        except ObjectDoesNotExist:
-            return None
 
+#Add decline with sending email?
 class PetitionForm(forms.Form):
     field_of_study = forms.CharField(max_length=250)
     university_representative = forms.CharField(max_length=250)
     work_experience = forms.CharField(widget=forms.Textarea())
 
-    # add accept and decline urls
     def submit(self, username):
+        accept_url = 'http://localhost:8085/users/petition/accept/%s' % (username)
         send_mail(
             'Teacher petition', 
             ("%s, requested a petition with following explanations:\n"
             "Field of study: %s\n"
             "University that he represents: %s\n"
-            "Work experience: %s") % (
+            "Work experience: %s\n"
+            "Accept: %s") % (
                 username, 
                 self.cleaned_data['field_of_study'],
                 self.cleaned_data['university_representative'],
-                self.cleaned_data['work_experience']
+                self.cleaned_data['work_experience'],
+                accept_url
             ),
             EMAIL_HOST_USER,
             [EMAIL_HOST_USER],

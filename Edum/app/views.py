@@ -10,7 +10,6 @@ from django.core.context_processors import csrf
 from usersys.views import login_partial
 
 def courses(request):
-    assert isinstance(request, HttpRequest)
     return render(
         request,
         'app/courses.html',
@@ -24,7 +23,6 @@ def courses(request):
     )
 
 def course(request, course_id):
-    assert isinstance(request, HttpRequest)
     course = get_object_or_404(Course, id=course_id)
     return render(
         request,
@@ -38,7 +36,6 @@ def course(request, course_id):
 
 @login_required()
 def module(request, course_id, module_id):
-    assert isinstance(request, HttpRequest)
     module = get_object_or_404(Module, id=module_id)
     if module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -54,7 +51,6 @@ def module(request, course_id, module_id):
 
 @login_required()
 def lecture(request, course_id, module_id, lecture_id):
-    assert isinstance(request, HttpRequest)
     lecture = get_object_or_404(Lecture, id=lecture_id)
     if lecture.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -72,7 +68,6 @@ def lecture(request, course_id, module_id, lecture_id):
 
 @login_required()
 def test(request, course_id, module_id, test_id):
-    assert isinstance(request, HttpRequest)
     test = get_object_or_404(Test, id=test_id)
     if test.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -90,7 +85,6 @@ def test(request, course_id, module_id, test_id):
 
 def home(request):
     """Renders the home page."""
-    assert isinstance(request, HttpRequest)
     return render(
         request,
         'app/home.html',
@@ -104,7 +98,6 @@ def home(request):
 
 def contact(request):
     """Renders the contact page."""
-    assert isinstance(request, HttpRequest)
     return render(
         request,
         'app/contact.html',
@@ -117,7 +110,6 @@ def contact(request):
 
 def about(request):
     """Renders the about page."""
-    assert isinstance(request, HttpRequest)
     return render(
         request,
         'app/about.html',

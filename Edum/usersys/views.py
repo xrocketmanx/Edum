@@ -4,11 +4,21 @@ from django.core.context_processors import csrf
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 from django.template.loader import render_to_string
 from usersys.forms import RegistrationForm, ConfirmationToken, PetitionForm
+
+def group_required(*group_names):
+    """Requires user membership in at least one of the groups passed in."""
+    def in_groups(u):
+        if u.is_authenticated():
+            if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
+                return True
+        return False
+    return user_passes_test(in_groups)
 
 def login(request):
     message = ""
@@ -106,3 +116,11 @@ def petition(request):
         }
         )
     )
+
+
+def accept_petition(request, username):
+    user = get_object_or_404(User, username = username)
+    teachers = Group.objects.get(name = 'teachers')
+    teachers.user_set.add(user)
+    return redirect('home')
+
