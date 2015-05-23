@@ -3,18 +3,18 @@
 {% block main %}
     <div class="list">
         {% for form in forms %}
-            <form action="{% url 'merge_lecture' module_id 'update' form.lecture_id %}" method="post">
+            <form action="{% url 'update_lecture' module_id form.lecture_id %}" method="post">
                 {% csrf_token %}
                 {{ form }}
                 <input type="submit" value="Update"/>
             </form>
-            <form action="{% url 'merge_lecture' module_id 'delete' form.lecture_id %}" method="post">
+            <form action="{% url 'delete_lecture' module_id form.lecture_id %}" method="post">
                 {% csrf_token %}
                 <input type="submit" value="Delete" />
             </form>
         {% endfor %}
     </div>
-    <form action="{% url 'merge_lecture' module_id 'add' None %}" method="post">
+    <form action="{% url 'add_lecture' module_id %}" method="post">
         {% csrf_token %}
         {{ lecture_form }}
         <input type="submit" />

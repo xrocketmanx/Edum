@@ -10,11 +10,17 @@ from django.core.context_processors import csrf
 from usersys.views import login_partial
 
 def courses(request):
+    user = request.user
+    editing_permission_groups = user.groups.filter(name='teachers')
+    editing_permission = False
+    if len(editing_permission_groups) > 0:
+        editing_permission = True
     return render(
         request,
         'app/courses.html',
         context_instance = RequestContext(request,
         {
+            'editing_permission': editing_permission,
             'courses': Course.objects.all(),
             'course_form': CourseForm,
             'csrf_token': csrf(request),

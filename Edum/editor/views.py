@@ -12,26 +12,12 @@ from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import FormView, CreateView, DeleteView, UpdateView
 from django.utils.decorators import method_decorator
 
-@group_required('teachers')
-def merge_course(request, action, course_id):
-    if request.POST:
-        if action == 'add':
-            form = CourseForm(request.POST)
-            if form.is_valid():
-                course = form.save()
-        if action == 'update':
-            course = get_object_or_404(Course, id=course_id)
-            form = CourseForm(request.POST, instance=course)
-            if form.is_valid():
-                form.save()
-        if action == 'delete':
-            Course.objects.get(id=course_id).delete()
-            return redirect("courses")
-    return redirect("edit_course", course_id=course.id)
+#Course editing
 
 class CourseCreator(CreateView):
     model = Course
     success_url = 'edit_course'
+    failure_url = 'courses'
 
     def post(self, request, *args, **kwargs):
         form = CourseForm(request.POST)
@@ -39,7 +25,8 @@ class CourseCreator(CreateView):
             course = form.save(False)
             course.author = request.user
             course.save()
-        return redirect(self.success_url, course_id=course.id)
+            return redirect(self.success_url, course_id=course.id)
+        return redirect(self.failure_url)
     
     @method_decorator(group_required('teachers'))
     def dispatch(self, request, *args, **kwargs):
@@ -48,7 +35,10 @@ class CourseCreator(CreateView):
 class CourseUpdater(UpdateView):
     model = Course
     form_class = CourseForm
-    success_url = '/courses'
+    success_url = '/editor/courses/%s'
+
+    def get_success_url(self):
+        return self.success_url % self.object.id
 
     @method_decorator(group_required('teachers'))
     def dispatch(self, request, *args, **kwargs):
@@ -63,41 +53,95 @@ class CourseDeleter(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-@group_required('teachers')
-def merge_module(request, course_id, action, module_id):
-    if request.POST:
-        if action == 'add':
-            form = ModuleForm(request.POST)
-            if form.is_valid():
-                module = form.save(commit=False)
-                module.course = get_object_or_404(Course, id=course_id)
-                module.save()
-        if action == 'update':
-            module = get_object_or_404(Module, id=module_id)
-            form = ModuleForm(request.POST, instance=module)
-            if form.is_valid():
-                form.save()
-        if action == 'delete':
-            Module.objects.get(id=module_id).delete()
-    return redirect("edit_modules", course_id=course_id)
+#Module editing
 
-@group_required('teachers')
-def merge_lecture(request, module_id, action, lecture_id):
-    if request.POST:
-        if action == 'add':
-            form = LectureForm(request.POST)
-            if form.is_valid():
-                lecture = form.save(commit=False)
-                lecture.module = get_object_or_404(Module, id=module_id)
-                lecture.save()
-        if action == 'update':
-            lecture = get_object_or_404(Lecture, id=lecture_id)
-            form = LectureForm(request.POST, instance=lecture)
-            if form.is_valid():
-                form.save()
-        if action == 'delete':
-            Lecture.objects.get(id=lecture_id).delete()
-    return redirect("edit_lectures", course_id=lecture.module.course.id, module_id=module_id)
+class ModuleCreator(CreateView):
+    model = Module
+    success_url = 'edit_modules'
+
+    def post(self, request, *args, **kwargs):
+        form = ModuleForm(request.POST)
+        course = get_object_or_404(Course, pk=kwargs['course_id'])
+        if form.is_valid():
+            module = form.save(False)
+            module.course = course
+            module.save()
+        return redirect(self.success_url, course_id=course.id)
+
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class ModuleUpdater(UpdateView):
+    model = Module
+    form_class = ModuleForm
+    success_url = '/editor/courses/%s/modules'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.course.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class ModuleDeleter(DeleteView):
+    model = Module
+    form_class = ModuleForm
+    success_url = '/editor/courses/%s/modules'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.course.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+#Lecture editing
+
+class LectureCreator(CreateView):
+    model = Lecture
+    success_url = 'edit_lectures'
+
+    def post(self, request, *args, **kwargs):
+        form = LectureForm(request.POST)
+        module = get_object_or_404(Module, pk=kwargs['module_id'])
+        course = module.course
+        if form.is_valid():
+            lecture = form.save(False)
+            lecture.module = module
+            lecture.save()
+        return redirect(self.success_url, course_id=course.id, module_id=module.id)
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class LectureUpdater(UpdateView):
+    model = Lecture
+    form_class = LectureForm
+    success_url = '/editor/courses/%s/modules/%s/lectures'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.module.course.id, self.object.module.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class LectureDeleter(DeleteView):
+    model = Lecture
+    form_class = LectureForm
+    success_url = '/editor/courses/%s/modules/%s/lectures'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.module.course.id, self.object.module.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+#Test editing
 
 @group_required('teachers')
 def merge_test(request, module_id, action, test_id):
@@ -118,6 +162,50 @@ def merge_test(request, module_id, action, test_id):
             Test.objects.get(id=test_id).delete()
             return redirect("edit_tests", course_id=test.module.course.id, module_id=module_id)
     return redirect("edit_test", course_id=test.module.course.id, module_id=module_id, test_id=test.id)
+
+class TestCreator(CreateView):
+    model = Test
+    success_url = 'edit_tests'
+
+    def post(self, request, *args, **kwargs):
+        form = TestForm(request.POST)
+        module = get_object_or_404(Module, pk=kwargs['module_id'])
+        course = module.course
+        if form.is_valid():
+            test = form.save(False)
+            test.module = module
+            test.save()
+        return redirect(self.success_url, course_id=course.id, module_id=module.id)
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class TestUpdater(UpdateView):
+    model = Test
+    form_class = TestForm
+    success_url = '/editor/courses/%s/modules/%s/tests'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.module.course.id, self.object.module.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class TestDeleter(DeleteView):
+    model = Test
+    form_class = TestForm
+    success_url = '/editor/courses/%s/modules/%s/tests'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.module.course.id, self.object.module.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+#Editor views
 
 class EditCourse(TemplateView):
     template_name = 'course_editor.html'
@@ -247,21 +335,3 @@ class EditTest(TemplateView):
     @method_decorator(group_required('teachers'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
-#@group_required('teachers')
-#def edit_test(request, course_id, module_id, test_id):
-#    test = get_object_or_404(Test, id=test_id)
-#    test_form = TestForm(instance=test)
-#    test_form.test_id = test_id
-#    return render(request,
-#        'test_editor.html',
-#        context_instance = RequestContext(request,
-#        {
-#            'test_form': test_form,
-#            'course_id': course_id,
-#            'module_id': module_id,
-#            'question_form': QuestionForm,
-#            'answer_form': AnswerForm,
-#            'csrf_token': csrf(request),
-#            'loginpartial': login_partial(request),
-#        }))
