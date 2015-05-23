@@ -9,7 +9,7 @@ from usersys.views import login_partial
 from django.contrib.auth.decorators import login_required
 from usersys.views import group_required
 from django.views.generic.base import View, TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView, DeleteView, UpdateView
 from django.utils.decorators import method_decorator
 
 @group_required('teachers')
@@ -28,6 +28,40 @@ def merge_course(request, action, course_id):
             Course.objects.get(id=course_id).delete()
             return redirect("courses")
     return redirect("edit_course", course_id=course.id)
+
+class CourseCreator(CreateView):
+    model = Course
+    success_url = 'edit_course'
+
+    def post(self, request, *args, **kwargs):
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(False)
+            course.author = request.user
+            course.save()
+        return redirect(self.success_url, course_id=course.id)
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class CourseUpdater(UpdateView):
+    model = Course
+    form_class = CourseForm
+    success_url = '/courses'
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class CourseDeleter(DeleteView):
+    model = Course
+    form_class = CourseForm
+    success_url = '/courses'
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
 @group_required('teachers')
 def merge_module(request, course_id, action, module_id):
@@ -159,38 +193,75 @@ class EditLectures(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-@group_required('teachers')
-def edit_tests(request, course_id, module_id):
-    tests = Test.objects.filter(module_id=module_id)
-    forms = [ TestForm(instance=test) for test in tests ]
-    for test, form in zip(tests, forms):
-        form.test_id = test.id
-    return render(request,
-        'tests_editor.html',
-        context_instance = RequestContext(request,
-        {
-            'forms': forms,
-            'course_id': course_id,
-            'module_id': module_id,
-            'test_form': TestForm,
-            'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
-        }))
 
-@group_required('teachers')
-def edit_test(request, course_id, module_id, test_id):
-    test = get_object_or_404(Test, id=test_id)
-    test_form = TestForm(instance=test)
-    test_form.test_id = test_id
-    return render(request,
-        'test_editor.html',
-        context_instance = RequestContext(request,
-        {
-            'test_form': test_form,
-            'course_id': course_id,
-            'module_id': module_id,
-            'question_form': QuestionForm,
-            'answer_form': AnswerForm,
-            'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
-        }))
+class EditTests(TemplateView):
+    form_class = TestForm
+    template_name = 'tests_editor.html'
+
+    def get(self, request, *args, **kwargs):
+        forms = self.get_forms(kwargs['module_id'])
+        return self.render_to_response(
+            self.get_context_data(
+                forms=forms,
+                module_id=kwargs['module_id'],
+                course_id=kwargs['course_id'],
+                test_form=self.form_class, 
+                loginpartial=login_partial(request)
+            )
+        )
+
+    def get_forms(self, module_id):
+        tests = Test.objects.filter(module_id=module_id)
+        forms = [ TestForm(instance=test) for test in tests ]
+        for test, form in zip(tests, forms):
+            form.test_id = test.id
+        return forms
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+
+class EditTest(TemplateView):
+    form_class = TestForm
+    template_name = 'test_editor.html'
+
+    def get(self, request, *args, **kwargs):
+        test_form = self.get_form(kwargs['test_id'])
+        test_form.test_id = kwargs['test_id']
+        return self.render_to_response(
+            self.get_context_data(
+                test_form=test_form,
+                course_id=kwargs['course_id'],
+                module_id=kwargs['module_id'],
+                question_form=QuestionForm,
+                answer_form=AnswerForm,
+                loginpartial=login_partial(request)
+            )
+        )
+
+    def get_form(self, test_id):
+       test = get_object_or_404(Test, id=test_id)
+       return self.form_class(instance=test) 
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+#@group_required('teachers')
+#def edit_test(request, course_id, module_id, test_id):
+#    test = get_object_or_404(Test, id=test_id)
+#    test_form = TestForm(instance=test)
+#    test_form.test_id = test_id
+#    return render(request,
+#        'test_editor.html',
+#        context_instance = RequestContext(request,
+#        {
+#            'test_form': test_form,
+#            'course_id': course_id,
+#            'module_id': module_id,
+#            'question_form': QuestionForm,
+#            'answer_form': AnswerForm,
+#            'csrf_token': csrf(request),
+#            'loginpartial': login_partial(request),
+#        }))

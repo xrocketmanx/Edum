@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from app.models import *
 
 class CourseForm(ModelForm):
-    
+
     class Meta:
         model = Course
         fields = ['name', 'overview', 'duration']

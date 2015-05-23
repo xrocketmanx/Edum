@@ -28,7 +28,7 @@ class Course(models.Model):
     name = models.CharField(max_length=250)
     overview = models.TextField()
     duration = models.IntegerField() # hours, think about this shit
-    author = models.ForeignKey('UserProfile', related_name = "courses", default = 0)
+    author = models.ForeignKey(User, related_name = "courses", default = 0)
 
     def __str__(self):
         return self.name
