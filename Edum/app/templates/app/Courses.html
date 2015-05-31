@@ -5,7 +5,9 @@
         {% for course in courses %}
             <div class="list_element">
                 <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
-                <a href="{% url 'edit_course' course.id %}">edit</a>
+                {% if editing_permission %}
+                    <a href="{% url 'edit_course' course.id %}">edit</a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

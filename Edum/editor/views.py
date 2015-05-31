@@ -235,11 +235,12 @@ class EditModules(TemplateView):
 
     def get(self, request, *args, **kwargs):
         forms = self.get_forms(kwargs['course_id'])
+        course = get_object_or_404(Course, id=kwargs['course_id'])
         return self.render_to_response(
             self.get_context_data(
                 forms=forms,
                 module_form=self.form_class, 
-                course_id=kwargs['course_id'],
+                course=course,
                 loginpartial=login_partial(request)
             )
         )
@@ -261,11 +262,12 @@ class EditLectures(TemplateView):
 
     def get(self, request, *args, **kwargs):
         forms = self.get_forms(kwargs['module_id'])
+        module = get_object_or_404(Module, id=kwargs['module_id'])
         return self.render_to_response(
             self.get_context_data(
                 forms=forms,
                 lecture_form=self.form_class, 
-                module_id=kwargs['module_id'],
+                module=module,
                 loginpartial=login_partial(request)
             )
         )
@@ -288,11 +290,11 @@ class EditTests(TemplateView):
 
     def get(self, request, *args, **kwargs):
         forms = self.get_forms(kwargs['module_id'])
+        module = get_object_or_404(Module, id=kwargs['module_id'])
         return self.render_to_response(
             self.get_context_data(
                 forms=forms,
-                module_id=kwargs['module_id'],
-                course_id=kwargs['course_id'],
+                module=module,
                 test_form=self.form_class, 
                 loginpartial=login_partial(request)
             )

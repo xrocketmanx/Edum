@@ -1,7 +1,14 @@
 ﻿{% extends "base.html" %}
 
 {% block main %}
-    <div>
+<div class="nav">
+    <a href="{% url 'course' test.module.course.id %}">{{ test.module.course.name }}</a>
+    >
+    <a href="{% url 'module' test.module.course.id test.module.id %}">{{ test.module.name }}</a>
+</div>
+
+
+<div>
         <p>{{ test.name }}</p>
         <p>{{ test.question_count }}</p>
         <p>{{ test.duration }} minutes</p>

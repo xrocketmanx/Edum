@@ -1,20 +1,27 @@
 ﻿{% extends "base.html" %}
 
 {% block main %}
+
+    <div class="nav">
+        <a href="{% url 'edit_course' module.course.id %}">{{ module.course.name }}</a>
+        >
+        <a href="{% url 'edit_modules' module.course.id %}">Modules</a>
+    </div>
+
     <div class="list">
         {% for form in forms %}
-            <form action="{% url 'update_lecture' module_id form.lecture_id %}" method="post">
+            <form action="{% url 'update_lecture' module.id form.lecture_id %}" method="post">
                 {% csrf_token %}
                 {{ form }}
                 <input type="submit" value="Update"/>
             </form>
-            <form action="{% url 'delete_lecture' module_id form.lecture_id %}" method="post">
+            <form action="{% url 'delete_lecture' module.id form.lecture_id %}" method="post">
                 {% csrf_token %}
                 <input type="submit" value="Delete" />
             </form>
         {% endfor %}
     </div>
-    <form action="{% url 'add_lecture' module_id %}" method="post">
+    <form action="{% url 'add_lecture' module.id %}" method="post">
         {% csrf_token %}
         {{ lecture_form }}
         <input type="submit" />
