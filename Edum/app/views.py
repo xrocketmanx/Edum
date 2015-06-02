@@ -41,6 +41,7 @@ def course(request, course_id):
         })
     )
 
+@login_required()
 def like_course(request, course_id, view_name):
     if request.POST:
         user = request.user
@@ -57,6 +58,15 @@ def like_course(request, course_id, view_name):
         if view_name == "course":
             return redirect(view_name, course_id=course_id)
     return redirect("courses")
+
+@login_required()
+def subscribe(request, course_id):
+    user_profile = request.user.user_profile
+    course = get_object_or_404(Course, id=course_id)
+    user_profile.signed_courses.add(course)
+    user_profile.save()
+
+    return redirect("course", course_id)
 
 @login_required()
 def module(request, course_id, module_id):

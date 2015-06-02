@@ -19,7 +19,7 @@ class RegistrationForm(UserCreationForm):
     def save(self, commit = True):
         user = super(RegistrationForm, self).save(commit=False)
         self.save_user(user, commit)
-        self.create_token(user)
+        confirmation_token = self.create_token(user)
 
         send_mail(
             'Edum registration', 
@@ -44,6 +44,7 @@ class RegistrationForm(UserCreationForm):
         confirmation_token.expiry_date = datetime.now() + timedelta(days=2)
         confirmation_token.token = get_random_string(length=TOKEN_LENGTH)
         confirmation_token.save()
+        return confirmation_token
 
     def is_valid(self):
         valid = super(RegistrationForm, self).is_valid()
