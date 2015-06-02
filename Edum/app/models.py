@@ -26,16 +26,19 @@ class UserProfile(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=250)
+    duration = models.FloatField(default=0)
     overview = models.TextField()
-    duration = models.IntegerField() # hours, think about this shit
     author = models.ForeignKey(User, related_name = "courses", default = 0)
+    rating = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.name
+
+class CoursesLikes(models.Model):
+    user = models.ForeignKey(User)
+    course = models.ForeignKey('Course')
     
 class Module(models.Model):
-    test_count = models.IntegerField(default=0) # to delete
-    lecture_count = models.IntegerField(default=0) # to delete
     name = models.CharField(max_length=250) 
     overview = models.TextField()
     course = models.ForeignKey('Course', related_name = "modules")

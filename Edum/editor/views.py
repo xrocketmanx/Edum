@@ -97,7 +97,7 @@ class ModuleDeleter(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-#Lecture editing
+#Lecture editing TODO: add duration to course
 
 class LectureCreator(CreateView):
     model = Lecture
@@ -143,26 +143,6 @@ class LectureDeleter(DeleteView):
 
 #Test editing
 
-@group_required('teachers')
-def merge_test(request, module_id, action, test_id):
-    if request.POST:
-        if action == 'add':
-            form = TestForm(request.POST)
-            if form.is_valid():
-                test = form.save(commit=False)
-                test.module = get_object_or_404(Module, id=module_id)
-                test.save()
-        if action == 'update':
-            #lecture = get_object_or_404(Lecture, id=lecture_id)
-            #form = LectureForm(request.POST, instance=lecture)
-            #if form.is_valid():
-            #    form.save()
-            pass
-        if action == 'delete':
-            Test.objects.get(id=test_id).delete()
-            return redirect("edit_tests", course_id=test.module.course.id, module_id=module_id)
-    return redirect("edit_test", course_id=test.module.course.id, module_id=module_id, test_id=test.id)
-
 class TestCreator(CreateView):
     model = Test
     success_url = 'edit_tests'
@@ -174,6 +154,8 @@ class TestCreator(CreateView):
         if form.is_valid():
             test = form.save(False)
             test.module = module
+            course.duration += test.duration / 60
+            course.save()
             test.save()
         return redirect(self.success_url, course_id=course.id, module_id=module.id)
     
@@ -197,6 +179,12 @@ class TestDeleter(DeleteView):
     model = Test
     form_class = TestForm
     success_url = '/editor/courses/%s/modules/%s/tests'
+
+    def post(self, request, *args, **kwargs):
+        test = self.get_object()
+        test.module.course.duration -= test.duration / 60
+        test.module.course.save()
+        return self.delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return self.success_url % (self.object.module.course.id, self.object.module.id)

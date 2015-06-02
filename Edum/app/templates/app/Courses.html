@@ -5,6 +5,13 @@
         {% for course in courses %}
             <div class="list_element">
                 <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
+                {% if is_authenticated %}
+                    <form action="{% url 'like_course' course.id 'courses' %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Like" />
+                    </form>
+                    Likes {{ course.rating }}
+                {% endif %}
                 {% if editing_permission %}
                     <a href="{% url 'edit_course' course.id %}">edit</a>
                 {% endif %}

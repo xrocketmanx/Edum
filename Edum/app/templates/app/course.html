@@ -4,6 +4,11 @@
     <div class="overview">
         <h1>{{ course.name }}</h1>
         <p>{{ course.overview }}</p>
+        <form action="{% url 'like_course' course.id 'course' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Like" />
+        </form>
+        Likes {{ course.rating }}
         <hr>
         <p>{{ course.duration }} hours</p>
     </div>

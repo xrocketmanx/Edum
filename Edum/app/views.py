@@ -4,7 +4,7 @@ from django.http import * # remove later
 from django.template import RequestContext
 from datetime import datetime
 from app.models import *
-from app.forms import *
+from editor.forms import *
 from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
 from usersys.views import login_partial
@@ -20,6 +20,7 @@ def courses(request):
         'app/courses.html',
         context_instance = RequestContext(request,
         {
+            'is_authenticated': user.is_authenticated(),
             'editing_permission': editing_permission,
             'courses': Course.objects.all(),
             'course_form': CourseForm,
@@ -39,6 +40,23 @@ def course(request, course_id):
             'loginpartial': login_partial(request),
         })
     )
+
+def like_course(request, course_id, view_name):
+    if request.POST:
+        user = request.user
+        course = get_object_or_404(Course, id=course_id)
+        user_likes = CoursesLikes.objects.filter(user=user, course=course)
+        if len(user_likes) > 0:
+            course.rating -= 1
+            user_likes[0].delete()
+        else:
+            course.rating += 1
+            course_like = CoursesLikes(user=user, course=course)
+            course_like.save()
+        course.save()
+        if view_name == "course":
+            return redirect(view_name, course_id=course_id)
+    return redirect("courses")
 
 @login_required()
 def module(request, course_id, module_id):
@@ -124,6 +142,8 @@ def about(request):
             'loginpartial': login_partial(request),
         })
     )
+
+
 
 
 
