@@ -200,11 +200,14 @@ class EditCourse(TemplateView):
     form_class = CourseForm
 
     def get(self, request, *args, **kwargs):
-        form = self.get_form(kwargs['course_id'])
+        course_id = kwargs['course_id'] 
+        if is_not_author(request, course_id):
+            return redirect('forbidden')
+        form = self.get_form(course_id)
         return self.render_to_response(
             self.get_context_data(
                 course_form=form, 
-                course_id=kwargs['course_id'],
+                course_id=course_id,
                 loginpartial=login_partial(request)
             )
         )
@@ -222,8 +225,11 @@ class EditModules(TemplateView):
     template_name = 'module_editor.html'
 
     def get(self, request, *args, **kwargs):
-        forms = self.get_forms(kwargs['course_id'])
-        course = get_object_or_404(Course, id=kwargs['course_id'])
+        course_id = kwargs['course_id'] 
+        if is_not_author(request, course_id):
+            return redirect('forbidden')
+        forms = self.get_forms(course_id)
+        course = get_object_or_404(Course, id=course_id)
         return self.render_to_response(
             self.get_context_data(
                 forms=forms,
@@ -249,6 +255,9 @@ class EditLectures(TemplateView):
     template_name = 'lecture_editor.html'
 
     def get(self, request, *args, **kwargs):
+        course_id = kwargs['course_id'] 
+        if is_not_author(request, course_id):
+            return redirect('forbidden')
         forms = self.get_forms(kwargs['module_id'])
         module = get_object_or_404(Module, id=kwargs['module_id'])
         return self.render_to_response(
@@ -271,12 +280,14 @@ class EditLectures(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-
 class EditTests(TemplateView):
     form_class = TestForm
     template_name = 'tests_editor.html'
 
     def get(self, request, *args, **kwargs):
+        course_id = kwargs['course_id'] 
+        if is_not_author(request, course_id):
+            return redirect('forbidden')
         forms = self.get_forms(kwargs['module_id'])
         module = get_object_or_404(Module, id=kwargs['module_id'])
         return self.render_to_response(
@@ -299,18 +310,20 @@ class EditTests(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-
 class EditTest(TemplateView):
     form_class = TestForm
     template_name = 'test_editor.html'
 
     def get(self, request, *args, **kwargs):
+        course_id = kwargs['course_id'] 
+        if is_not_author(request, course_id):
+            return redirect('forbidden')
         test_form = self.get_form(kwargs['test_id'])
         test_form.test_id = kwargs['test_id']
         return self.render_to_response(
             self.get_context_data(
                 test_form=test_form,
-                course_id=kwargs['course_id'],
+                course_id=course_id,
                 module_id=kwargs['module_id'],
                 question_form=QuestionForm,
                 answer_form=AnswerForm,
@@ -325,3 +338,10 @@ class EditTest(TemplateView):
     @method_decorator(group_required('teachers'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+def is_not_author(request, course_id):
+    user = request.user
+    course = get_object_or_404(Course, id=course_id)
+    if course.author.id == user.id:
+        return False
+    return True

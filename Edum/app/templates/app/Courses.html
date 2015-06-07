@@ -17,7 +17,7 @@
                     </form>
                     Likes {{ course.rating }}
                 {% endif %}
-                {% if editing_permission %}
+                {% if editing_permission and user.id == course.author.id %}
                     <a href="{% url 'edit_course' course.id %}">edit</a>
                 {% endif %}
             </div>

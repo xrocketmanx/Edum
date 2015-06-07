@@ -81,7 +81,7 @@ def unsubscribe(request, course_id):
 @login_required()
 def module(request, course_id, module_id):
     if not subscribed(request.user, course_id):
-        return redirect("courses") #TODO: change url
+        return redirect("forbidden")
     module = get_object_or_404(Module, id=module_id)
     if module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -98,7 +98,7 @@ def module(request, course_id, module_id):
 @login_required()
 def lecture(request, course_id, module_id, lecture_id):
     if not subscribed(request.user, course_id):
-        return redirect("courses") #TODO: change url
+        return redirect("forbidden")
     lecture = get_object_or_404(Lecture, id=lecture_id)
     if lecture.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -117,7 +117,7 @@ def lecture(request, course_id, module_id, lecture_id):
 @login_required()
 def test(request, course_id, module_id, test_id):
     if not subscribed(request.user, course_id):
-        return redirect("courses") #TODO: change url
+        return redirect("forbidden")
     test = get_object_or_404(Test, id=test_id)
     if test.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -169,13 +169,18 @@ def about(request):
         })
     )
 
+def forbidden(request):
+    return render(
+        request,
+        'app/403-page.html',
+        context_instance = RequestContext(request,
+        {
+            'loginpartial': login_partial(request),
+        })
+    )
+
 def subscribed(user, course_id):
     course = get_object_or_404(Course, id=course_id)
     if course in user.user_profile.signed_courses.all():
         return True
     return False
-
-
-
-
-

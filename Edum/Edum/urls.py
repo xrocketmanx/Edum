@@ -9,6 +9,7 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
     url(r'^', include('app.urls')),
+    url(r'^forbidden/', 'app.views.forbidden', name='forbidden'),
     url(r'^editor/', include('editor.urls')),
     url(r'^users/', include('usersys.urls')),
     url(r'^admin/', include(admin.site.urls)),
