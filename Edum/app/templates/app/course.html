@@ -4,20 +4,29 @@
     <div class="overview">
         <h1>{{ course.name }}</h1>
         <p>{{ course.overview }}</p>
-        <form action="{% url 'like_course' course.id 'course' %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="Like" />
-        </form>
-        Likes {{ course.rating }}
+        {% if is_authenticated %}
+            {% if course in user.user_profile.signed_courses.all %}
+                <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+            {% else %}
+                <a href="{% url 'subscribe' course.id %}">subscribe</a>
+            {% endif %}
+            <form action="{% url 'like_course' course.id 'course' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Like" />
+            </form>
+            Likes {{ course.rating }}
+        {% endif %}
         <hr>
         <p>{{ course.duration }} hours</p>
     </div>
     <div class="list">
-        <p>Modules: </p>
-        {% for module in course.modules.all %}
-            <div class="list_element_min">
-                <p><a href="{% url 'module' course.id module.id %}">{{ module.name }}</a></p>
-            </div>
-        {% endfor %}
+        {% if course in user.user_profile.signed_courses.all %}
+            <p>Modules: </p>
+            {% for module in course.modules.all %}
+                <div class="list_element_min">
+                    <p><a href="{% url 'module' course.id module.id %}">{{ module.name }}</a></p>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 {% endblock %}

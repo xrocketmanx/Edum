@@ -8,17 +8,14 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user_profile')
     tests_results = models.ManyToManyField(
         'Test',
-        through="TestResult",
+        through='TestResult',
         through_fields=('user','test')
-    )
-    courses_results = models.ManyToManyField(
-        'Course',
-        through="CourseProgress",
-        through_fields=('user','course')
     )
     signed_courses = models.ManyToManyField(
         'Course',
-        related_name="signed_courses"
+        through='CourseProgress',
+        through_fields=('user','course'),
+        related_name='signed_courses'
     )
 
     def __str__(self):
@@ -28,7 +25,7 @@ class Course(models.Model):
     name = models.CharField(max_length=250)
     duration = models.FloatField(default=0)
     overview = models.TextField()
-    author = models.ForeignKey(User, related_name = "courses", default = 0)
+    author = models.ForeignKey(User, related_name = 'courses', default = 0)
     rating = models.IntegerField(default = 0)
 
     def __str__(self):
@@ -41,7 +38,7 @@ class CoursesLikes(models.Model):
 class Module(models.Model):
     name = models.CharField(max_length=250) 
     overview = models.TextField()
-    course = models.ForeignKey('Course', related_name = "modules")
+    course = models.ForeignKey('Course', related_name = 'modules')
 
     def __str__(self):
         return self.name
@@ -49,14 +46,14 @@ class Module(models.Model):
 class Lecture(models.Model):
     video_url = models.TextField()
     name = models.CharField(max_length=250)
-    module = models.ForeignKey('Module', related_name = "lectures")
+    module = models.ForeignKey('Module', related_name = 'lectures')
 
     def __str__(self):
         return self.name
 
 class Test(models.Model):
     question_count = models.IntegerField(default=0)
-    module = models.ForeignKey('Module', related_name = "tests")
+    module = models.ForeignKey('Module', related_name = 'tests')
     name = models.CharField(max_length=250)
     duration = models.IntegerField() # minutes
 
@@ -66,14 +63,14 @@ class Test(models.Model):
 class Question(models.Model):
     answer_count = models.IntegerField()
     question = models.TextField()
-    test = models.ForeignKey('Test', related_name = "questions")
+    test = models.ForeignKey('Test', related_name = 'questions')
 
     def __str__(self):
         return self.question
 
 class Answer(models.Model):
     answer = models.TextField()
-    question = models.ForeignKey('Question', related_name = "answers")
+    question = models.ForeignKey('Question', related_name = 'answers')
     correct = models.BooleanField(default=False)
 
     def __str__(self):
@@ -93,4 +90,4 @@ class CourseProgress(models.Model):
     progress = models.IntegerField(default=0) # between 0 and 100
 
     def __str__(self):
-        return self.user.login, self.course.name
+        return self.user.user.username + self.course.name

@@ -6,6 +6,11 @@
             <div class="list_element">
                 <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
                 {% if is_authenticated %}
+                    {% if course in user.user_profile.signed_courses.all %}
+                        <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+                    {% else %}
+                        <a href="{% url 'subscribe' course.id %}">subscribe</a>
+                    {% endif %}
                     <form action="{% url 'like_course' course.id 'courses' %}" method="post">
                         {% csrf_token %}
                         <input type="submit" value="Like" />

@@ -11,3 +11,16 @@ D:\Edum\Edum\bin\Microsoft.PythonTools.AzureSetup.exe.config
 D:\Edum\Edum\bin\wfastcgi.py
 D:\Edum\Edum\obj\Debug\web.config
 D:\Edum\Edum\obj\Debug\web.debug.config
+G:\Edum\Edum\bin\Microsoft.PythonTools.WebRole.dll
+G:\Edum\Edum\obj\Debug\attach_server.py
+G:\Edum\Edum\obj\Debug\visualstudio_py_debugger.py
+G:\Edum\Edum\obj\Debug\visualstudio_py_repl.py
+G:\Edum\Edum\obj\Debug\visualstudio_py_util.py
+G:\Edum\Edum\obj\Debug\__init__.py
+G:\Edum\Edum\obj\Debug\__main__.py
+G:\Edum\Edum\bin\AzureSetup.cfg
+G:\Edum\Edum\bin\Microsoft.PythonTools.AzureSetup.exe
+G:\Edum\Edum\bin\Microsoft.PythonTools.AzureSetup.exe.config
+G:\Edum\Edum\bin\wfastcgi.py
+G:\Edum\Edum\obj\Debug\web.config
+G:\Edum\Edum\obj\Debug\web.debug.config

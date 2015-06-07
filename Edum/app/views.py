@@ -36,6 +36,7 @@ def course(request, course_id):
         'app/course.html',
         context_instance = RequestContext(request,
         {
+            'is_authenticated': request.user.is_authenticated(),
             'course': course,
             'loginpartial': login_partial(request),
         })
@@ -63,13 +64,24 @@ def like_course(request, course_id, view_name):
 def subscribe(request, course_id):
     user_profile = request.user.user_profile
     course = get_object_or_404(Course, id=course_id)
-    user_profile.signed_courses.add(course)
-    user_profile.save()
+    progress = CourseProgress(user=user_profile, course=course)
+    progress.save()
 
     return redirect("course", course_id)
 
 @login_required()
+def unsubscribe(request, course_id):
+    user_profile = request.user.user_profile
+    course = get_object_or_404(Course, id=course_id)
+    progress = get_object_or_404(CourseProgress, user=user_profile, course=course)
+    progress.delete()
+
+    return redirect("courses")
+
+@login_required()
 def module(request, course_id, module_id):
+    if not subscribed(request.user, course_id):
+        return redirect("courses") #TODO: change url
     module = get_object_or_404(Module, id=module_id)
     if module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -85,6 +97,8 @@ def module(request, course_id, module_id):
 
 @login_required()
 def lecture(request, course_id, module_id, lecture_id):
+    if not subscribed(request.user, course_id):
+        return redirect("courses") #TODO: change url
     lecture = get_object_or_404(Lecture, id=lecture_id)
     if lecture.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -102,6 +116,8 @@ def lecture(request, course_id, module_id, lecture_id):
 
 @login_required()
 def test(request, course_id, module_id, test_id):
+    if not subscribed(request.user, course_id):
+        return redirect("courses") #TODO: change url
     test = get_object_or_404(Test, id=test_id)
     if test.module.course.id != int(course_id):
         raise Http404("Module not found")
@@ -152,6 +168,12 @@ def about(request):
             'loginpartial': login_partial(request),
         })
     )
+
+def subscribed(user, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if course in user.user_profile.signed_courses.all():
+        return True
+    return False
 
 
 
