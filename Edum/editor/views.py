@@ -193,6 +193,95 @@ class TestDeleter(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
+#Question editing
+
+class QuestionCreator(CreateView):
+    model = Question
+    success_url = 'edit_test'
+
+    def post(self, request, *args, **kwargs):
+        form = QuestionForm(request.POST)
+        test = get_object_or_404(Test, pk=kwargs['test_id'])
+        if form.is_valid():
+            question = form.save(False)
+            question.test = test
+            question.save()
+        return redirect(self.success_url, course_id=test.module.course.id, module_id=test.module.id, test_id=test.id)
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class QuestionUpdater(UpdateView):
+    model = Question
+    form_class = QuestionForm
+    success_url = '/editor/courses/%s/modules/%s/tests/%s'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.test.module.course.id, self.object.test.module.id, self.object.test.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class QuestionDeleter(DeleteView):
+    model = Question
+    form_class = QuestionForm
+    success_url = '/editor/courses/%s/modules/%s/tests/%s'
+
+    def get_success_url(self):
+        return self.success_url % (self.object.test.module.course.id, self.object.test.module.id, self.object.test.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+#Answer editing
+
+class AnswerCreator(CreateView):
+    model = Answer
+    success_url = 'edit_test'
+
+    def post(self, request, *args, **kwargs):
+        form = AnswerForm(request.POST)
+        question = get_object_or_404(Question, pk=kwargs['question_id'])
+        if form.is_valid():
+            answer = form.save(False)
+            answer.question = question
+            answer.save()
+        return redirect(
+            self.success_url, course_id=question.test.module.course.id, module_id=question.test.module.id, test_id=question.test.id)
+    
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class AnswerUpdater(UpdateView):
+    model = Answer
+    form_class = AnswerForm
+    success_url = '/editor/courses/%s/modules/%s/tests/%s'
+
+    def get_success_url(self):
+        return self.success_url % (
+            self.object.question.test.module.course.id, self.object.question.test.module.id, self.object.question.test.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class AnswerDeleter(DeleteView):
+    model = Answer
+    form_class = AnswerForm
+    success_url = '/editor/courses/%s/modules/%s/tests/%s'
+
+    def get_success_url(self):
+        return self.success_url % (
+            self.object.question.test.module.course.id, self.object.question.test.module.id, self.object.question.test.id)
+
+    @method_decorator(group_required('teachers'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 #Editor views
 
 class EditCourse(TemplateView):
@@ -316,24 +405,44 @@ class EditTest(TemplateView):
 
     def get(self, request, *args, **kwargs):
         course_id = kwargs['course_id'] 
+        module_id = kwargs['module_id']
+        test_id = kwargs['test_id']
         if is_not_author(request, course_id):
             return redirect('forbidden')
-        test_form = self.get_form(kwargs['test_id'])
-        test_form.test_id = kwargs['test_id']
+        test_form = self.get_form(test_id)
+        question_forms = self.get_question_forms(test_id)
+
         return self.render_to_response(
             self.get_context_data(
                 test_form=test_form,
+                test_id=test_id,
                 course_id=course_id,
-                module_id=kwargs['module_id'],
+                module_id=module_id,
                 question_form=QuestionForm,
                 answer_form=AnswerForm,
+                question_forms=question_forms,
                 loginpartial=login_partial(request)
             )
         )
 
     def get_form(self, test_id):
        test = get_object_or_404(Test, id=test_id)
-       return self.form_class(instance=test) 
+       return self.form_class(instance=test)
+   
+    def get_question_forms(self, test_id):
+       questions = Question.objects.filter(test_id=test_id)
+       question_forms = [ QuestionForm(instance=question) for question in questions ]
+       for question, form in zip(questions, question_forms):
+            form.answers = self.get_answer_forms(question.id)
+            form.question_id = question.id
+       return question_forms
+
+    def get_answer_forms(self, question_id):
+       answers = Answer.objects.filter(question_id=question_id)
+       answer_forms = [ AnswerForm(instance=answer) for answer in answers ]
+       for answer, form in zip(answers, answer_forms):
+            form.answer_id = answer.id
+       return answer_forms
 
     @method_decorator(group_required('teachers'))
     def dispatch(self, request, *args, **kwargs):

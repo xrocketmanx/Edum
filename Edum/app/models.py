@@ -52,7 +52,6 @@ class Lecture(models.Model):
         return self.name
 
 class Test(models.Model):
-    question_count = models.IntegerField(default=0)
     module = models.ForeignKey('Module', related_name = 'tests')
     name = models.CharField(max_length=250)
     duration = models.IntegerField() # minutes

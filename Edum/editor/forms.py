@@ -23,11 +23,21 @@ class LectureForm(ModelForm):
         model = Lecture
         fields = ['name', 'video_url']
 
+    def save(self, commit = True):
+        lecture = super(LectureForm, self).save(commit=False)
+        url = self.cleaned_data['video_url']
+        video_code = url[url.find('=') + 1:]
+        embed_url = 'https://www.youtube.com/embed/' + video_code
+        lecture.video_url = embed_url
+        if commit:
+            lecture.save()
+        return lecture
+
 class TestForm(ModelForm):
     
     class Meta:
         model = Test
-        fields = ['name', 'question_count', 'duration']
+        fields = ['name', 'duration']
 
 class QuestionForm(ModelForm):
 

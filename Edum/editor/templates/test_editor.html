@@ -1,14 +1,47 @@
 ﻿{% extends "base.html" %}
 
 {% block main %}
-    <form action="{% url 'merge_test' module_id 'update' test_form.test_id %}" method="post">
+    <form action="{% url 'update_test' module_id test_id %}" method="post">
         {% csrf_token %}
         {{ test_form }}
         <input type="submit" value="Update"/>
     </form>
-    <form action="{% url 'merge_test' module_id 'delete' test_form.test_id %}" method="post">
+    <form action="{% url 'delete_test' module_id test_id %}" method="post">
         {% csrf_token %}
-        <input type="submit" value="Delete" />
+        <input type="submit" value="Delete"/>
     </form>
-
+    <p>Questions(Number = {{ question_forms|length }})</p>
+    {% for question_form in question_forms %}
+        <form action="{% url 'update_question' test_id question_form.question_id %}" method="post">
+            {% csrf_token %}
+            {{ question_form }}
+            <input type="submit" value="Update"/>
+        </form>
+        <form action="{% url 'delete_question' test_id question_form.question_id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Delete"/>
+        </form>
+        <p>Answers</p>
+        {% for answer_form in question_form.answers %}
+            <form action="{% url 'update_answer' question_form.question_id answer_form.answer_id %}" method="post">
+                {% csrf_token %}
+                {{ answer_form }}
+                <input type="submit" value="Update"/>
+            </form>
+            <form action="{% url 'delete_answer' question_form.question_id answer_form.answer_id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Delete"/>
+            </form>
+        {% endfor %}
+        <form action="{% url 'add_answer' question_form.question_id %}" method="post">
+            {% csrf_token %}
+            {{ answer_form }}
+            <input type="submit" />
+        </form>
+    {% endfor %}
+    <form action="{% url 'add_question' test_id %}" method="post">
+        {% csrf_token %}
+        {{ question_form }}
+        <input type="submit" />
+    </form>
 {% endblock %}

@@ -7,10 +7,9 @@
     <a href="{% url 'module' test.module.course.id test.module.id %}">{{ test.module.name }}</a>
 </div>
 
-
 <div>
         <p>{{ test.name }}</p>
-        <p>{{ test.question_count }}</p>
+        <p>Number of questions: {{ test.questions.all|length }}</p>
         <p>{{ test.duration }} minutes</p>
     </div>
 {% endblock %}>
