@@ -8,8 +8,21 @@
 </div>
 
 <div>
-        <p>{{ test.name }}</p>
-        <p>Number of questions: {{ test.questions.all|length }}</p>
-        <p>{{ test.duration }} minutes</p>
-    </div>
-{% endblock %}>
+    <p>{{ test.name }}</p>
+    <p>Number of questions: {{ test.questions.all|length }}</p>
+    <p>{{ test.duration }} minutes</p>
+</div>
+
+<a href="{% url 'start_test' test.id %}">Start test</a>
+
+{% for question in test.questions.all %}
+    <form>
+        {{ question.question }}
+            {% for answer in question.answers.all %}
+            <input type="checkbox"/>{{ answer.answer }}
+        {% endfor %}
+        <input type="submit" value="Answer"/>
+    </form>
+{% endfor %}
+
+{% endblock %}

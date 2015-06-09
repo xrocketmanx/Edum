@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.models import *
 from editor.forms import *
 from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
+from django.core import serializers
 from usersys.views import login_partial
 
 def courses(request):
@@ -131,6 +133,38 @@ def test(request, course_id, module_id, test_id):
             'test': test,
             'loginpartial': login_partial(request),
         })
+    )
+
+@login_required()
+def start_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    if not subscribed(request.user, test.module.course.id):
+        return redirect("forbidden")
+    test_end_time = datetime.now() + timedelta(minutes=test.duration)
+
+    return render(
+        request,
+        'app/testing.html',
+        context_instance = RequestContext(request,
+        {
+            'test': test,
+            'end_time': test_end_time,
+            'loginpartial': login_partial(request),
+        })
+    )
+
+@login_required()
+def get_questions(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    if not subscribed(request.user, test.module.course.id):
+        return redirect("forbidden")
+    data = {}
+    for question in test.questions.all():
+        data[question.question] = [ answer.answer for answer in question.answers.all() ]
+    print(data)
+    return HttpResponse(
+        json.dumps(data),
+        content_type="application/json"
     )
 
 def home(request):
