@@ -140,7 +140,7 @@ def start_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     if not subscribed(request.user, test.module.course.id):
         return redirect("forbidden")
-    test_end_time = datetime.now() + timedelta(minutes=test.duration)
+    test_end_time = test.duration * 60 * 1000
 
     return render(
         request,
@@ -161,7 +161,6 @@ def get_questions(request, test_id):
     data = {}
     for question in test.questions.all():
         data[question.question] = [ answer.answer for answer in question.answers.all() ]
-    print(data)
     return HttpResponse(
         json.dumps(data),
         content_type="application/json"

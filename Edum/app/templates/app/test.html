@@ -15,14 +15,4 @@
 
 <a href="{% url 'start_test' test.id %}">Start test</a>
 
-{% for question in test.questions.all %}
-    <form>
-        {{ question.question }}
-            {% for answer in question.answers.all %}
-            <input type="checkbox"/>{{ answer.answer }}
-        {% endfor %}
-        <input type="submit" value="Answer"/>
-    </form>
-{% endfor %}
-
 {% endblock %}
