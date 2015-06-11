@@ -44,11 +44,23 @@
         });
 
         $("#answer_button").click(function () {
-            answers.push(getUserAnswers(answers, currentQuestion));
+            userAnswers.push({
+                'question' : questions[currentQuestion],
+                'answers' : getUserAnswers(answers, currentQuestion)
+            });
             $("#answers").text("");
             currentQuestion++;
             if (currentQuestion >= questions.length) {
-                window.location.href = "{% url 'courses' %}";
+                $('.main').text("");
+                $.post(
+                    "{% url 'get_test_result' test.id %}",
+                    { 'answers': JSON.stringify(userAnswers) },
+                    function (data) {
+                        $('#result').text(data);
+                        alert(data);
+                    }
+                );
+                //window.location.href = "{% url 'courses' %}";
             }
             showQuestion(questions, answers, currentQuestion);
         });
@@ -59,4 +71,5 @@
         <div id="answers"></div>
     </div>
     <div id="answer_button">Answer</div>
+    <div id="result"></div>
 {% endblock %}

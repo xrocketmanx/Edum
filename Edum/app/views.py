@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from app.models import *
 from editor.forms import *
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.core.context_processors import csrf
 from django.core import serializers
 from usersys.views import login_partial
@@ -165,6 +166,37 @@ def get_questions(request, test_id):
         json.dumps(data),
         content_type="application/json"
     )
+
+@csrf_exempt
+@login_required()
+def get_test_result(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    if not subscribed(request.user, test.module.course.id):
+        return redirect("forbidden")
+
+    user_answers = json.loads(request.POST['answers'])
+
+    user_grade = get_grade(user_answers, test.questions.all())
+
+    return HttpResponse(
+        user_grade,
+        content_type="application/text"
+    )
+
+def get_grade(user_answers, test_questions):
+    user_grade = 0
+    max_grade = 0
+    for question in user_answers:
+        test_question = test_questions.get(question=question['question'])
+        for answer in test_question.answers.all():
+            if answer.correct:
+                max_grade += 1
+                if answer.answer in question['answers']:
+                    user_grade += 1
+            else:
+                if answer.answer in answers:
+                   user_grade -= 1
+    return user_grade / max_grade
 
 def home(request):
     """Renders the home page."""
