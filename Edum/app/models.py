@@ -61,19 +61,19 @@ class Test(models.Model):
 
 class Question(models.Model):
     answer_count = models.IntegerField()
-    question = models.TextField()
+    text = models.TextField()
     test = models.ForeignKey('Test', related_name = 'questions')
 
     def __str__(self):
-        return self.question
+        return self.text
 
 class Answer(models.Model):
-    answer = models.TextField()
+    text = models.TextField()
     question = models.ForeignKey('Question', related_name = 'answers')
     correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.answer
+        return self.text
 
 class TestResult(models.Model):
     test = models.ForeignKey('Test')

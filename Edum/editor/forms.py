@@ -43,10 +43,10 @@ class QuestionForm(ModelForm):
 
     class Meta:
         model = Question
-        fields = ['question', 'answer_count']
+        fields = ['text', 'answer_count']
 
 class AnswerForm(ModelForm):
 
     class Meta:
         model = Answer
-        fields = ['answer', 'correct']
+        fields = ['text', 'correct']

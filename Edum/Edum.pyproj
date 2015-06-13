@@ -91,6 +91,7 @@
     <Content Include="app\templates\app\testing.html" />
     <Content Include="editor\templates\tests_editor.html" />
     <Content Include="editor\templates\test_editor.html" />
+    <Content Include="Edum.sqlite3" />
     <Content Include="Edum\static\content\bootstrap.css" />
     <Content Include="Edum\static\content\bootstrap.min.css" />
     <Content Include="Edum\static\content\site.css" />

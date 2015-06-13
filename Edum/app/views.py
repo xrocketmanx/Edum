@@ -141,7 +141,7 @@ def start_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     if not subscribed(request.user, test.module.course.id):
         return redirect("forbidden")
-    test_end_time = test.duration * 60 * 1000
+    duration = test.duration * 60 * 1000
 
     return render(
         request,
@@ -149,7 +149,7 @@ def start_test(request, test_id):
         context_instance = RequestContext(request,
         {
             'test': test,
-            'end_time': test_end_time,
+            'duration': duration,
             'loginpartial': login_partial(request),
         })
     )
@@ -161,7 +161,7 @@ def get_questions(request, test_id):
         return redirect("forbidden")
     data = {}
     for question in test.questions.all():
-        data[question.question] = [ answer.answer for answer in question.answers.all() ]
+        data[question.text] = [ answer.text for answer in question.answers.all() ]
     return HttpResponse(
         json.dumps(data),
         content_type="application/json"
@@ -174,29 +174,32 @@ def get_test_result(request, test_id):
     if not subscribed(request.user, test.module.course.id):
         return redirect("forbidden")
 
-    user_answers = json.loads(request.POST['answers'])
+    user_results = json.loads(request.POST['results'])
 
-    user_grade = get_grade(user_answers, test.questions.all())
+    user_grade = get_grade(user_results, test.questions.all())
 
     return HttpResponse(
         user_grade,
         content_type="application/text"
     )
 
-def get_grade(user_answers, test_questions):
+def get_grade(user_results, test_questions):
     user_grade = 0
-    max_grade = 0
-    for question in user_answers:
-        test_question = test_questions.get(question=question['question'])
-        for answer in test_question.answers.all():
-            if answer.correct:
-                max_grade += 1
-                if answer.answer in question['answers']:
-                    user_grade += 1
-            else:
-                if answer.answer in answers:
-                   user_grade -= 1
-    return user_grade / max_grade
+    for question in user_results:
+        test_question = test_questions.get(text=question['text'])
+        if(is_correct(question['answers'], test_question)):
+            user_grade += 1
+    return user_grade / len(test_questions)
+
+def is_correct(answers, question):
+    for answer in question.answers.all():
+        if answer.correct:
+            if answer.text not in answers:
+                return False
+        else:
+            if answer.text in answers:
+                return False
+    return True
 
 def home(request):
     """Renders the home page."""

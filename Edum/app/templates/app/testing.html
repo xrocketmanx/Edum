@@ -2,22 +2,101 @@
 
 {% block main %}
 <script>
-    setTimeout(function () {
-       window.location.href = "{% url 'courses' %}"; 
-    }, {{ end_time }});
+    var questions = [];
+    var answers = [];
+    var userResults = [];
+    var currentQuestion = 0;
+    var testDuration = {{ duration }};
 
-    var showQuestion = function (questions, answers, currentQuestion) {
+    $(document).ready(function () {
+
+        setTimeout(function () {
+            userResults.push({
+                'text' : questions[currentQuestion],
+                'answers' : getUserAnswers()
+            });
+            finishTest(); 
+        }, testDuration);
+
+        startTimer(testDuration / 1000, $("#timer"));
+
+        $.get("{% url 'get_questions' test.id %}", function (data) {
+            questions = Object.keys(data);
+            for (var i in questions){
+                answers.push(data[questions[i]]);
+            }
+            showNavigation(questions.length);
+            showQuestion();
+        });
+
+        $("#navigation").on("click", ".question_id", function () {
+            userResults.push({
+                'text' : questions[currentQuestion],
+                'answers' : getUserAnswers()
+            });
+            currentQuestion = this.innerHTML;
+            showQuestion();
+        });
+
+        $("#answer_button").click(function () {
+            userResults.push({
+                'text' : questions[currentQuestion],
+                'answers' : getUserAnswers()
+            });
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                finishTest();
+            }
+            showQuestion();
+        });
+
+        $("#finish_button").click(function () {
+            userResults.push({
+                'text' : questions[currentQuestion],
+                'answers' : getUserAnswers()
+            });
+            finishTest();
+        });
+    });
+
+    var showNavigation = function (questionCount) {
+        for(var i = 0; i < questionCount; i++) {
+            $("<div class='question_id'>" + i + "</div>").appendTo("#navigation");
+        }
+    }
+
+    var showQuestion = function () {
+        $("#answers").text("");
         $("#question").text(questions[currentQuestion]);
         var questionAnswers = answers[currentQuestion];
+        var checkedAnswers = getCheckedAnswers(questions[currentQuestion]);
         for (var i in questionAnswers) {
             var answerID = 'box' + i;
-            $('<input type = "checkbox" id = "' + answerID + '" />' +
+            checked = "";
+            if(checkedAnswers[i]) checked = "checked";
+            $('<input type = "checkbox" id = "' + answerID + '"' + checked + ' />' +
               '<label for = "' + answerID + '">' + questionAnswers[i] + '</label>').
                   appendTo("#answers");
         }
     }
 
-    var getUserAnswers = function (answers, currentQuestion) {
+    var getCheckedAnswers = function (question) {
+        var currentUserResult = userResults.filter(function (result) { 
+            return result.text == question; 
+        })[0];
+        var checks = answers[currentQuestion].map(function (answer) {
+            if(currentUserResult == undefined) return false;
+            for (var i in currentUserResult.answers) {
+                if (answer == currentUserResult.answers[i]) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        return checks;
+    }
+
+    var getUserAnswers = function () {
         var questionAnswers = answers[currentQuestion];
         var userAnswers = [];
         for(var i in questionAnswers) {
@@ -29,47 +108,43 @@
        return userAnswers;
     }
 
-    $(document).ready(function () {
-        var questions = [];
-        var answers = [];
-        var userAnswers = [];
-        var currentQuestion = 0;
-
-        $.get("{% url 'get_questions' test.id %}", function (data) {
-            questions = Object.keys(data);
-            for (var i in questions){
-                answers.push(data[questions[i]]);
+    var finishTest = function () {
+        $('.test_container').text("");
+        $.post(
+            "{% url 'get_test_result' test.id %}",
+            { 'results': JSON.stringify(userResults) },
+            function (data) {
+                $('#result').text(data);
             }
-            showQuestion(questions, answers, currentQuestion);
-        });
+        );
+    }
 
-        $("#answer_button").click(function () {
-            userAnswers.push({
-                'question' : questions[currentQuestion],
-                'answers' : getUserAnswers(answers, currentQuestion)
-            });
-            $("#answers").text("");
-            currentQuestion++;
-            if (currentQuestion >= questions.length) {
-                $('.main').text("");
-                $.post(
-                    "{% url 'get_test_result' test.id %}",
-                    { 'answers': JSON.stringify(userAnswers) },
-                    function (data) {
-                        $('#result').text(data);
-                        alert(data);
-                    }
-                );
-                //window.location.href = "{% url 'courses' %}";
+    var startTimer = function (duration, display) {
+        var timer = duration, minutes, seconds;
+        setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.text(minutes + ":" + seconds);
+
+            if (--timer < 0) {
+                timer = duration;
             }
-            showQuestion(questions, answers, currentQuestion);
-        });
-    });
+        }, 1000);
+    }
 </script>
-    <div id="question_container">
-        <div id="question"></div>
-        <div id="answers"></div>
+    <div class="test_container">
+        <div>You have <span id="timer"></span> minutes left</div>
+        <div id="navigation"></div>
+        <div id="question_container">
+            <div id="question"></div>
+            <div id="answers"></div>
+        </div>
+        <div id="answer_button">Answer</div>
+        <div id="finish_button">Finish</div>
     </div>
-    <div id="answer_button">Answer</div>
     <div id="result"></div>
 {% endblock %}
