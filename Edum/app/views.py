@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import json
+from random import shuffle
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
@@ -160,8 +161,15 @@ def get_questions(request, test_id):
     if not subscribed(request.user, test.module.course.id):
         return redirect("forbidden")
     data = {}
-    for question in test.questions.all():
+
+    test_questions = [ question for question in test.questions.all() ]
+
+    shuffle(test_questions)
+    test_questions = test_questions[:test.question_count]
+
+    for question in test_questions:
         data[question.text] = [ answer.text for answer in question.answers.all() ]
+
     return HttpResponse(
         json.dumps(data),
         content_type="application/json"
@@ -175,15 +183,20 @@ def get_test_result(request, test_id):
         return redirect("forbidden")
 
     user_results = json.loads(request.POST['results'])
+    user_grade = calculate_grade(user_results, test.questions.all())
 
-    user_grade = get_grade(user_results, test.questions.all())
+    test_result = TestResult()
+    test_result.test = test
+    test_result.user = request.user.user_profile
+    test_result.passed = False if user_grade < 0.7 else True
+    test_result.save()
 
     return HttpResponse(
         user_grade,
         content_type="application/text"
     )
 
-def get_grade(user_results, test_questions):
+def calculate_grade(user_results, test_questions):
     user_grade = 0
     for question in user_results:
         test_question = test_questions.get(text=question['text'])

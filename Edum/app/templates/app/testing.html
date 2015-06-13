@@ -11,10 +11,7 @@
     $(document).ready(function () {
 
         setTimeout(function () {
-            userResults.push({
-                'text' : questions[currentQuestion],
-                'answers' : getUserAnswers()
-            });
+            saveUserAnswer();
             finishTest(); 
         }, testDuration);
 
@@ -30,31 +27,26 @@
         });
 
         $("#navigation").on("click", ".question_id", function () {
-            userResults.push({
-                'text' : questions[currentQuestion],
-                'answers' : getUserAnswers()
-            });
+            saveUserAnswer();
             currentQuestion = this.innerHTML;
             showQuestion();
         });
 
         $("#answer_button").click(function () {
-            userResults.push({
-                'text' : questions[currentQuestion],
-                'answers' : getUserAnswers()
-            });
+            saveUserAnswer();
             currentQuestion++;
             if (currentQuestion >= questions.length) {
-                finishTest();
+                if (confirm("Are you sure, you want to finish test?")) {
+                    finishTest();
+                }
+                currentQuestion = 0;
             }
             showQuestion();
         });
 
         $("#finish_button").click(function () {
-            userResults.push({
-                'text' : questions[currentQuestion],
-                'answers' : getUserAnswers()
-            });
+            if (!confirm("Are you sure, you want to finish test?")) return;
+            saveUserAnswer();
             finishTest();
         });
     });
@@ -70,6 +62,12 @@
         $("#question").text(questions[currentQuestion]);
         var questionAnswers = answers[currentQuestion];
         var checkedAnswers = getCheckedAnswers(questions[currentQuestion]);
+
+        var index = arrayObjectIndexOf(userResults, questions[currentQuestion], 'text');
+        if (index > -1) {
+            userResults.splice(index, 1);
+        }
+        
         for (var i in questionAnswers) {
             var answerID = 'box' + i;
             checked = "";
@@ -78,6 +76,13 @@
               '<label for = "' + answerID + '">' + questionAnswers[i] + '</label>').
                   appendTo("#answers");
         }
+    }
+
+    var arrayObjectIndexOf = function (myArray, searchTerm, property) {
+        for(var i = 0, len = myArray.length; i < len; i++) {
+            if (myArray[i][property] === searchTerm) return i;
+        }
+        return -1;
     }
 
     var getCheckedAnswers = function (question) {
@@ -134,6 +139,13 @@
                 timer = duration;
             }
         }, 1000);
+    }
+
+    var saveUserAnswer = function() {
+        userResults.push({
+            'text' : questions[currentQuestion],
+            'answers' : getUserAnswers()
+        });
     }
 </script>
     <div class="test_container">

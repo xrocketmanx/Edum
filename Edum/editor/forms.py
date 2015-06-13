@@ -37,7 +37,7 @@ class TestForm(ModelForm):
     
     class Meta:
         model = Test
-        fields = ['name', 'duration']
+        fields = ['name', 'duration', 'question_count']
 
 class QuestionForm(ModelForm):
 

@@ -55,6 +55,7 @@ class Test(models.Model):
     module = models.ForeignKey('Module', related_name = 'tests')
     name = models.CharField(max_length=250)
     duration = models.IntegerField() # minutes
+    question_count = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -81,7 +82,7 @@ class TestResult(models.Model):
     passed = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.login, self.test.name
+        return self.user.user.username + " " + self.test.name
 
 class CourseProgress(models.Model):
     user = models.ForeignKey('UserProfile')
