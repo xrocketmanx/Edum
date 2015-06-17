@@ -9,7 +9,8 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template.loader import render_to_string
-from usersys.forms import RegistrationForm, ConfirmationToken, PetitionForm
+from usersys.forms import RegistrationForm, ConfirmationToken, PetitionForm, ProfileForm, PasswordForm
+from django.views.generic.edit import UpdateView
 
 def group_required(*group_names):
     """Requires user membership in at least one of the groups passed in."""
@@ -19,6 +20,43 @@ def group_required(*group_names):
                 return True
         return False
     return user_passes_test(in_groups)
+
+@login_required()
+def profile(request):
+    user = request.user
+    editing_permission_groups = user.groups.filter(name='teachers')
+    editing_permission = False
+    if len(editing_permission_groups) > 0:
+        editing_permission = True
+    return render(
+        request,
+        'profile.html',
+        context_instance = RequestContext(request,
+        {
+            'user': user,
+            'profile_form': ProfileForm(instance=request.user),
+            'password_form': PasswordForm,
+            'csrf_token': csrf(request),
+            'signed_courses': user.user_profile.signed_courses,
+            'editing_permission': editing_permission,
+        })
+    )
+
+class ProfileUpdater(UpdateView):
+    model = User 
+    form_class = ProfileForm
+    success_url = '/users/profile'
+
+    def get_success_url(self):
+        return self.success_url
+
+def update_password(request):
+    if request.POST:
+        password1 = request.POST['password']
+        password2 = request.POST['repeat_password']
+        if password1 == password2:
+            request.user.set_password(password1)
+    return redirect('profile')
 
 def login(request):
     message = ""

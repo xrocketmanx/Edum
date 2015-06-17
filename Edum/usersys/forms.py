@@ -1,4 +1,4 @@
-#from django.utils.translation import ugettext_lazy as _
+
 from datetime import datetime, timedelta
 from django import forms
 from django.core.mail import send_mail
@@ -9,6 +9,7 @@ from Edum.settings import TOKEN_LENGTH, EMAIL_HOST_USER
 from app.models import UserProfile
 from usersys.models import ConfirmationToken
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.forms.models import ModelForm
 
 class RegistrationForm(UserCreationForm):
 
@@ -83,3 +84,12 @@ class PetitionForm(forms.Form):
             [EMAIL_HOST_USER],
             fail_silently=False
         )
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
+class PasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    repeat_password = forms.CharField(widget=forms.PasswordInput)

@@ -2,6 +2,7 @@
 
 {% block main %}
 <script>
+    var finishMessage = "Are you sure, you want to finish test?";
     var questions = [];
     var answers = [];
     var userResults = [];
@@ -36,7 +37,7 @@
             saveUserAnswer();
             currentQuestion++;
             if (currentQuestion >= questions.length) {
-                if (confirm("Are you sure, you want to finish test?")) {
+                if (confirm(finishMessage)) {
                     finishTest();
                 }
                 currentQuestion = 0;
@@ -45,7 +46,7 @@
         });
 
         $("#finish_button").click(function () {
-            if (!confirm("Are you sure, you want to finish test?")) return;
+            if (!confirm(finishMessage)) return;
             saveUserAnswer();
             finishTest();
         });

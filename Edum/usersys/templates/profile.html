@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+
+
+{% block main %}
+    {{ user.username }}
+    <form action="{% url 'update_profile' user.id %}" method="post">
+        {% csrf_token %}
+        {{ profile_form }}
+        <input type="submit" value="Update"/>
+    </form>
+    <form action="{% url 'update_password' %}" method="post">
+        {% csrf_token %}
+        {{ password_form }}
+        <input type="submit" value="Update"/>
+    </form>
+    {% for course in signed_courses.all %}
+        <div class="list_element">
+            <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
+            {% if course in user.user_profile.signed_courses.all %}
+                <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+            {% endif %}
+            <form action="{% url 'like_course' course.id 'courses' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Like" />
+            </form>
+            Likes {{ course.rating }}
+            {% if editing_permission and user.id == course.author.id %}
+                <a href="{% url 'edit_course' course.id %}">edit</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}

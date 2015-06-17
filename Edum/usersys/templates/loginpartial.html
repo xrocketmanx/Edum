@@ -3,7 +3,7 @@
 <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}
     <ul>
-        <li>Hello {{ user.username }}!</li>
+        <li>Hello <a href="{% url 'profile' %}">{{ user.username }}!</a></li>
         <li><input type="submit" value="Log out" /></li>
     </ul>
 </form>

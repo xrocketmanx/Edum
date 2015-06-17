@@ -6,6 +6,7 @@
         <p>{{ course.overview }}</p>
         {% if is_authenticated %}
             {% if course in user.user_profile.signed_courses.all %}
+                Progress: <progress max="100" value="{{ progress.progress }}"></progress>
                 <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
             {% else %}
                 <a href="{% url 'subscribe' course.id %}">subscribe</a>

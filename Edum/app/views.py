@@ -35,11 +35,13 @@ def courses(request):
 
 def course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    progress = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
     return render(
         request,
         'app/course.html',
         context_instance = RequestContext(request,
         {
+            'progress': progress[0],
             'is_authenticated': request.user.is_authenticated(),
             'course': course,
             'loginpartial': login_partial(request),
@@ -184,17 +186,39 @@ def get_test_result(request, test_id):
 
     user_results = json.loads(request.POST['results'])
     user_grade = calculate_grade(user_results, test.questions.all())
-
-    test_result = TestResult()
-    test_result.test = test
-    test_result.user = request.user.user_profile
-    test_result.passed = False if user_grade < 0.7 else True
-    test_result.save()
+    save_test_result(user_grade, request.user.user_profile, test)
+    update_course_progress(test.module.course, request.user.user_profile)
 
     return HttpResponse(
         user_grade,
         content_type="application/text"
     )
+
+def save_test_result(user_grade, user_profile, test):
+    test_results = TestResult.objects.filter(test=test, user=user_profile)
+    passed = False if user_grade < 0.7 else True
+    if len(test_results) > 0:
+        test_result = test_results[0]
+        if passed or test_result.passed:
+            test_result.passed = True
+        else:
+            test_result.passed = False
+    else:
+        test_result = TestResult()
+        test_result.test = test
+        test_result.user = user_profile
+        test_result.passed = passed
+    test_result.save()
+
+def update_course_progress(course, user_profile):
+    course_progress = CourseProgress.objects.filter(course=course, user=user_profile)
+    test_count = sum([len(module.tests.all()) for module in course.modules.all()])
+    for module in course.modules.all():
+        for test in module.tests.all():
+            test_results = TestResult.objects.filter(test=test, user=user_profile)
+            if len(test_results) > 0 and test_results[0].passed:
+                course_progress[0].progress += 100 / test_count
+    course_progress[0].save()
 
 def calculate_grade(user_results, test_questions):
     user_grade = 0
@@ -215,7 +239,6 @@ def is_correct(answers, question):
     return True
 
 def home(request):
-    """Renders the home page."""
     return render(
         request,
         'app/home.html',
@@ -228,7 +251,6 @@ def home(request):
     )
 
 def contact(request):
-    """Renders the contact page."""
     return render(
         request,
         'app/contact.html',
@@ -240,7 +262,6 @@ def contact(request):
     )
 
 def about(request):
-    """Renders the about page."""
     return render(
         request,
         'app/about.html',
