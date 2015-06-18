@@ -1,12 +1,13 @@
+<ul class="nav navbar-nav navbar-right visible-md visible-lg">
+    {% if not user.is_authenticated %}
+        <li>
+            <a href="{% url 'login' %}">Log in</a>
+        </li>
+    {% else %}
+        <li><a href="{% url 'profile' %}">{{ user.username }}</a></li>
+        <li><a href="{% url 'logout' %}">Log out</a></li>
+    {% endif %}
+ </ul>
 
-{% if user.is_authenticated %}
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <ul>
-        <li>Hello <a href="{% url 'profile' %}">{{ user.username }}!</a></li>
-        <li><input type="submit" value="Log out" /></li>
-    </ul>
-</form>
-{% else %}
-    <a href="{% url 'login' %}">Log in</a>
-{% endif %}
+
+

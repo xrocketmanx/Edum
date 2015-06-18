@@ -1,28 +1,32 @@
 ﻿{% extends "base.html" %}
 
 {% block main %}
-    <div class="list">
+    <div class="course-container">
         {% for course in courses %}
-            <div class="list_element">
-                <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
+            <div class="course-element">
+                <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a>{% if editing_permission and user.id == course.author.id %}
+                    <a class="glyphicon glyphicon-edit edit-button" href="{% url 'edit_course' course.id %}"></a>
+                {% endif %}</h1>
+                
                 {% if is_authenticated %}
                     {% if course in user.user_profile.signed_courses.all %}
-                        <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+                        <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
                     {% else %}
-                        <a href="{% url 'subscribe' course.id %}">subscribe</a>
+                        <a class="label label-success" href="{% url 'subscribe' course.id %}">subscribe</a>
                     {% endif %}
-                    <form action="{% url 'like_course' course.id 'courses' %}" method="post">
+                    <form class="like-container" action="{% url 'like_course' course.id 'courses' %}" method="post">
                         {% csrf_token %}
-                        <input type="submit" value="Like" />
+                        <button class="like-button" type="submit">
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                        </button>
+                        <span class="like-count">{{ course.rating }}</span>
                     </form>
-                    Likes {{ course.rating }}
-                {% endif %}
-                {% if editing_permission and user.id == course.author.id %}
-                    <a href="{% url 'edit_course' course.id %}">edit</a>
                 {% endif %}
             </div>
+            <div class="clearfix course-break"></div>
         {% endfor %}
     </div>
+    <br/>
     {% if editing_permission %}
         <form action="{% url 'add_course' %}" method="post">
             {% csrf_token %}

@@ -13,7 +13,7 @@
             {% endif %}
             <form action="{% url 'like_course' course.id 'course' %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Like" />
+                <button class="like-button" type="submit"></button>
             </form>
             Likes {{ course.rating }}
         {% endif %}

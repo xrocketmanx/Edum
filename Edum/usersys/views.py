@@ -39,6 +39,7 @@ def profile(request):
             'csrf_token': csrf(request),
             'signed_courses': user.user_profile.signed_courses,
             'editing_permission': editing_permission,
+            'loginpartial': login_partial(request),
         })
     )
 
@@ -78,7 +79,8 @@ def login(request):
         {
             'form': AuthenticationForm,
             'csrf_token': csrf(request),
-            'message': message
+            'message': message,
+            'loginpartial': login_partial(request),
          }))
 
 def register(request):
@@ -112,8 +114,7 @@ def login_partial(request):
 
 @login_required()
 def logout(request):
-    if request.POST:
-       django_logout(request)
+    django_logout(request)
     return redirect("home") 
 
 def user_confirmation(request, user_id, token):
@@ -151,6 +152,7 @@ def petition(request):
             'form': PetitionForm, 
             'message': message,
             'csrf_token': csrf(request),
+            'loginpartial': login_partial(request),
         }
         )
     )
