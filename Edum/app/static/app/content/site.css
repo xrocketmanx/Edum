@@ -80,6 +80,16 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
 .like-button {
     background: none;
     border: none;
+    display: inline-block;
+}
+
+.like-button:hover {
+    cursor: pointer;
+}
+
+.like-button:active {
+    top: 1px;
+    position: relative;
 }
 
 .like-button span {
@@ -89,6 +99,10 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
 .like-count {
     top: -10px;
     position: relative;
+}
+
+.glyphicon-heart {
+    font-size: 14px;
 }
 
 /* courses */
@@ -112,3 +126,23 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
     color: #7522B7 !important;
 }
 
+.progress-container {
+    float: right;
+    top: -65px;
+    position: relative;
+}
+
+textarea {
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.428571429;
+  color: #555555;
+  vertical-align: middle;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+          transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}

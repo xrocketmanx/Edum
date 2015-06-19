@@ -19,11 +19,12 @@
             {% if course in user.user_profile.signed_courses.all %}
                 <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
             {% endif %}
-            <form action="{% url 'like_course' course.id 'courses' %}" method="post">
-                {% csrf_token %}
-                <input type="submit" value="Like" />
-            </form>
-            Likes {{ course.rating }}
+            <div class="like-container">
+                 <span class="label label-primary like-count">
+                 <span class="glyphicon glyphicon-heart"></span> 
+                    {{ course.rating }}
+                 </span>
+             </div>
             {% if editing_permission and user.id == course.author.id %}
                 <a href="{% url 'edit_course' course.id %}">edit</a>
             {% endif %}

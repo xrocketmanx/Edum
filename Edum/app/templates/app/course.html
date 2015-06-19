@@ -1,24 +1,44 @@
 ﻿{% extends "base.html" %}
 
 {% block main %}
+    <script>
+        $(document).ready(function () {
+            $(".like-button").click(function () {
+                $.get("{% url 'like_course' course.id %}", function (data) {
+                    $(".like-count").text(data);
+                });
+            });
+        });
+    </script>
     <div class="overview">
-        <h1>{{ course.name }}</h1>
-        <p>{{ course.overview }}</p>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <h1>{{ course.name }}</h1>
+                    <div class="progress-container">
+                        {% if course in user.user_profile.signed_courses.all %}
+                            Progress: <progress max="100" value="{{ progress.progress }}"></progress>
+                            <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+                        {% else %}
+                            <a class="label label-success" href="{% url 'subscribe' course.id %}">subscribe</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <p>Duration: {{ course.duration|floatformat }}h</p>
+                <p>{{ course.overview }}</p>
+            </div>
+        </div>
         {% if is_authenticated %}
-            {% if course in user.user_profile.signed_courses.all %}
-                Progress: <progress max="100" value="{{ progress.progress }}"></progress>
-                <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
-            {% else %}
-                <a href="{% url 'subscribe' course.id %}">subscribe</a>
-            {% endif %}
-            <form action="{% url 'like_course' course.id 'course' %}" method="post">
-                {% csrf_token %}
-                <button class="like-button" type="submit"></button>
-            </form>
-            Likes {{ course.rating }}
+            <div class="like-container">
+                <div class="like-button">
+                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                </div>
+                <span class="like-count">{{ course.rating }}</span>
+            </div>
         {% endif %}
         <hr>
-        <p>{{ course.duration }} hours</p>
     </div>
     <div class="list">
         {% if course in user.user_profile.signed_courses.all %}

@@ -35,13 +35,17 @@ def courses(request):
 
 def course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
-    progress = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
+    progresses = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
+    if len(progresses) > 0:
+        progress = progresses[0]
+    else:
+        progress = 0
     return render(
         request,
         'app/course.html',
         context_instance = RequestContext(request,
         {
-            'progress': progress[0],
+            'progress': progress,
             'is_authenticated': request.user.is_authenticated(),
             'course': course,
             'loginpartial': login_partial(request),
@@ -49,22 +53,22 @@ def course(request, course_id):
     )
 
 @login_required()
-def like_course(request, course_id, view_name):
-    if request.POST:
-        user = request.user
-        course = get_object_or_404(Course, id=course_id)
-        user_likes = CoursesLikes.objects.filter(user=user, course=course)
-        if len(user_likes) > 0:
-            course.rating -= 1
-            user_likes[0].delete()
-        else:
-            course.rating += 1
-            course_like = CoursesLikes(user=user, course=course)
-            course_like.save()
-        course.save()
-        if view_name == "course":
-            return redirect(view_name, course_id=course_id)
-    return redirect("courses")
+def like_course(request, course_id):
+    user = request.user
+    course = get_object_or_404(Course, id=course_id)
+    user_likes = CoursesLikes.objects.filter(user=user, course=course)
+    if len(user_likes) > 0:
+        course.rating -= 1
+        user_likes[0].delete()
+    else:
+        course.rating += 1
+        course_like = CoursesLikes(user=user, course=course)
+        course_like.save()
+    course.save()
+    return HttpResponse(
+        course.rating,
+        content_type="text/plain"
+    )
 
 @login_required()
 def subscribe(request, course_id):
