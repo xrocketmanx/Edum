@@ -1,13 +1,14 @@
 ﻿{% extends "base.html" %}
 
+{% block navigation %}
+    <a href="{% url 'edit_course' module.course.id %}">{{ module.course.name }}</a>
+    /
+    <a href="{% url 'edit_modules' module.course.id %}">Modules</a>
+    /
+    Lectures
+{% endblock %}
+
 {% block main %}
-
-    <div class="nav">
-        <a href="{% url 'edit_course' module.course.id %}">{{ module.course.name }}</a>
-        >
-        <a href="{% url 'edit_modules' module.course.id %}">Modules</a>
-    </div>
-
     <div class="list">
         {% for form in forms %}
             <form action="{% url 'update_lecture' module.id form.lecture_id %}" method="post">

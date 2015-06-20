@@ -1,14 +1,18 @@
 ﻿{% extends "base.html" %}
 
+{% block navigation %}
+    {{ course.name }}
+{% endblock %}
+
 {% block main %}
-    <form action="{% url 'update_course' course_id %}" method="post">
+    <form action="{% url 'update_course' course.id %}" method="post">
         {% csrf_token %}
         {{ course_form }}
         <input type="submit" value="Update"/>
     </form>
-    <form action="{% url 'delete_course' course_id %}" method="post">
+    <form action="{% url 'delete_course' course.id %}" method="post">
         {% csrf_token %}
         <input type="submit" value="Delete" />
     </form>
-    <a href="{% url 'edit_modules' course_id %}">Modules</a>
+    <a href="{% url 'edit_modules' course.id %}">Modules</a>
 {% endblock %}

@@ -219,12 +219,13 @@ def save_test_result(user_grade, user_profile, test):
 def update_course_progress(course, user_profile):
     course_progress = CourseProgress.objects.filter(course=course, user=user_profile)
     test_count = sum([len(module.tests.all()) for module in course.modules.all()])
+    user_progress = course_progress[0]
     for module in course.modules.all():
         for test in module.tests.all():
             test_results = TestResult.objects.filter(test=test, user=user_profile)
             if len(test_results) > 0 and test_results[0].passed:
-                course_progress[0].progress += 100 / test_count
-    course_progress[0].save()
+                user_progress.progress += 100 / test_count
+    user_progress.save()
 
 def calculate_grade(user_results, test_questions):
     user_grade = 0

@@ -1,5 +1,9 @@
 ﻿{% extends "base.html" %}
 
+{% block navigation %}
+    {{ course.name }}
+{% endblock %}
+
 {% block main %}
     <script>
         $(document).ready(function () {
@@ -18,7 +22,9 @@
                     {% if is_authenticated %}
                         <div class="progress-container">
                             {% if course in user.user_profile.signed_courses.all %}
-                                Progress: <progress max="100" value="{{ progress.progress }}"></progress>
+                                <div class="progress-bar-container">
+                                    Progress: <progress max="100" value="{{ progress.progress }}"></progress>
+                                </div>
                                 <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
                             {% else %}
                                 <a class="label label-success" href="{% url 'subscribe' course.id %}">subscribe</a>
@@ -42,11 +48,11 @@
         {% endif %}
         <hr>
     </div>
-    <div class="list">
+    <div class="module-container">
         {% if course in user.user_profile.signed_courses.all %}
-            <p>Modules: </p>
+            <p>Modules:</p>
             {% for module in course.modules.all %}
-                <div class="list_element_min">
+                <div class="module-element">
                     <p><a href="{% url 'module' course.id module.id %}">{{ module.name }}</a></p>
                 </div>
             {% endfor %}

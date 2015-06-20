@@ -122,7 +122,7 @@
             function (data) {
                 $('#result').text(data);
             }
-        );
+        ).fail(function() { alert(1); } );
     }
 
     var startTimer = function (duration, display) {

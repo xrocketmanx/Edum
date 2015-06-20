@@ -1,15 +1,16 @@
 ﻿{% extends "base.html" %}
 
-{% block main %}
-<div class="nav">
+{% block navigation %}
     <a href="{% url 'course' lecture.module.course.id %}">{{ lecture.module.course.name }}</a>
-    >
+    /
     <a href="{% url 'module' lecture.module.course.id lecture.module.id %}">{{ lecture.module.name }}</a>
-</div>
+    /
+    {{ lecture.name }}
+{% endblock %}
 
-
+{% block main %}
 <h1>{{ lecture.name }}</h1>
 
-<iframe width="425" height="349" src="{{ lecture.video_url }}" frameborder="1" allowfullscreen></iframe>
+<iframe class="video-container" src="{{ lecture.video_url }}" frameborder="1" allowfullscreen></iframe>
 
 {% endblock %}

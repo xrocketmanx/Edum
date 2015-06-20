@@ -289,20 +289,19 @@ class EditCourse(TemplateView):
     form_class = CourseForm
 
     def get(self, request, *args, **kwargs):
-        course_id = kwargs['course_id'] 
-        if is_not_author(request, course_id):
+        course = get_object_or_404(Course, id=kwargs['course_id'])
+        if is_not_author(request, course.id):
             return redirect('forbidden')
-        form = self.get_form(course_id)
+        form = self.get_form(course)
         return self.render_to_response(
             self.get_context_data(
                 course_form=form, 
-                course_id=course_id,
+                course=course,
                 loginpartial=login_partial(request)
             )
         )
 
-    def get_form(self, course_id):
-        course = get_object_or_404(Course, id=course_id)
+    def get_form(self, course):
         return self.form_class(instance=course)
 
     @method_decorator(group_required('teachers'))
@@ -404,29 +403,26 @@ class EditTest(TemplateView):
     template_name = 'test_editor.html'
 
     def get(self, request, *args, **kwargs):
-        course_id = kwargs['course_id'] 
-        module_id = kwargs['module_id']
-        test_id = kwargs['test_id']
-        if is_not_author(request, course_id):
+        test = get_object_or_404(Test, id=kwargs['test_id'])
+        if is_not_author(request, test.module.course.id):
             return redirect('forbidden')
-        test_form = self.get_form(test_id)
-        question_forms = self.get_question_forms(test_id)
+        test_form = self.get_form(test)
+        question_forms = self.get_question_forms(test.id)
 
         return self.render_to_response(
             self.get_context_data(
                 test_form=test_form,
-                test_id=test_id,
-                course_id=course_id,
-                module_id=module_id,
+                course=test.module.course,
+                module=test.module,
+                test=test,
                 question_form=QuestionForm,
                 answer_form=AnswerForm,
                 question_forms=question_forms,
-                loginpartial=login_partial(request)
+                loginpartial=login_partial(request),
             )
         )
 
-    def get_form(self, test_id):
-       test = get_object_or_404(Test, id=test_id)
+    def get_form(self, test):
        return self.form_class(instance=test)
    
     def get_question_forms(self, test_id):

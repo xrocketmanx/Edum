@@ -1,18 +1,31 @@
 ﻿{% extends "base.html" %}
 
-{% block main %}
-<div class="nav">
+{% block navigation %}
     <a href="{% url 'course' test.module.course.id %}">{{ test.module.course.name }}</a>
-    >
+    /
     <a href="{% url 'module' test.module.course.id test.module.id %}">{{ test.module.name }}</a>
+    /
+    {{ test.name }}
+{% endblock %}
+
+{% block main %}
+
+<div class="overview">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <h1>{{ test.name }}</h1>
+            </div>
+        </div>
+        <div class="panel-body">
+            <p>Test duration: {{ test.duration }}</p>
+            <p>Number of questions: {{ test.questions.all|length }}</p>
+        </div>
+    </div>
 </div>
 
-<div>
-    <p>{{ test.name }}</p>
-    <p>Number of questions: {{ test.questions.all|length }}</p>
-    <p>{{ test.duration }} minutes</p>
+<div class="start-test-button">
+    <a class="btn btn-primary" href="{% url 'start_test' test.id %}">Start test</a>
 </div>
-
-<a href="{% url 'start_test' test.id %}">Start test</a>
 
 {% endblock %}

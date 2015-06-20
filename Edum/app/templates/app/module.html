@@ -1,32 +1,45 @@
 ﻿{% extends "base.html" %}
 
-{% block main %}
-    <div class="nav">
-        <a href="{% url 'course' module.course.id %}">{{ module.course.name }}</a>
-    </div>
+{% block navigation %}
+    <a href="{% url 'course' module.course.id %}">{{ module.course.name }}</a>
+    /
+    {{ module.name }}
+{% endblock %}
 
+{% block main %}
     <div class="overview">
-        <h1>{{ module.name }}</h1>
-        <p>{{ module.overview }}</p>
-        <hr>
-        <p>{{ module.tests.count }} tests</p>
-        <p>{{ module.lectures.count }} lectures</p>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <h1>{{ module.name }}</h1>
+                </div>
+            </div>
+            <div class="panel-body">
+                <p>Test count: {{ module.tests.count }}</p>
+                <p>Lecture count: {{ module.lectures.count }}</p>
+                <p>{{ module.overview }}</p>
+            </div>
+        </div>
     </div>
     
-    <div class="list">
-        <p>Lectures</p>
-        {% for lecture in module.lectures.all %}
-            <div class="list_element_min">
-                <a href="{% url 'lecture' module.course.id module.id lecture.id %}">{{ lecture.name }}</a>
-            </div>
-        {% endfor %}
-    </div>
-    <div class="list">
-        <p>Tests</p>
-        {% for test in module.tests.all %}
-            <div class="list_element_min">
-                <a href="{% url 'test' module.course.id module.id test.id %}">{{ test.name }}</a>
-            </div>
-        {% endfor %}
+    <div class="row col-xs-12 col-sm-6 col-md-8 col-md-offset-2">
+        <div class="lecture-container">
+            Lectures
+            {% for lecture in module.lectures.all %}
+                <div class="list-element">
+                    <a href="{% url 'lecture' module.course.id module.id lecture.id %}">{{ lecture.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="test-container">
+            Tests
+            {% for test in module.tests.all %}
+                <div class="list-element">
+                    <a href="{% url 'test' module.course.id module.id test.id %}">{{ test.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
+
+
