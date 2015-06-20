@@ -35,11 +35,13 @@ def courses(request):
 
 def course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
-    progresses = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
-    if len(progresses) > 0:
-        progress = progresses[0]
-    else:
-        progress = 0
+    progress = 0
+    if request.user.is_authenticated():
+        progresses = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
+        if len(progresses) > 0:
+            progress = progresses[0]
+        else:
+            progress = 0
     return render(
         request,
         'app/course.html',

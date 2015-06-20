@@ -15,14 +15,16 @@
             <div class="panel-heading">
                 <div class="panel-title">
                     <h1>{{ course.name }}</h1>
-                    <div class="progress-container">
-                        {% if course in user.user_profile.signed_courses.all %}
-                            Progress: <progress max="100" value="{{ progress.progress }}"></progress>
-                            <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
-                        {% else %}
-                            <a class="label label-success" href="{% url 'subscribe' course.id %}">subscribe</a>
-                        {% endif %}
-                    </div>
+                    {% if is_authenticated %}
+                        <div class="progress-container">
+                            {% if course in user.user_profile.signed_courses.all %}
+                                Progress: <progress max="100" value="{{ progress.progress }}"></progress>
+                                <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+                            {% else %}
+                                <a class="label label-success" href="{% url 'subscribe' course.id %}">subscribe</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="panel-body">
