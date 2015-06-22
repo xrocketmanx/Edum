@@ -27,14 +27,16 @@
             showQuestion();
         });
 
-        $("#navigation").on("click", ".question_id", function () {
+        $("#question-navigation").on("click", ".question-button", function () {
             saveUserAnswer();
-            currentQuestion = this.innerHTML;
+            $("#question-nav-" + (currentQuestion + 1)).removeClass("active");
+            currentQuestion = this.innerHTML - 1;
             showQuestion();
         });
 
-        $("#answer_button").click(function () {
+        $("#answer-button").click(function () {
             saveUserAnswer();
+            $("#question-nav-" + (currentQuestion + 1)).removeClass("active");
             currentQuestion++;
             if (currentQuestion >= questions.length) {
                 if (confirm(finishMessage)) {
@@ -45,7 +47,7 @@
             showQuestion();
         });
 
-        $("#finish_button").click(function () {
+        $("#finish-button").click(function () {
             if (!confirm(finishMessage)) return;
             saveUserAnswer();
             finishTest();
@@ -54,11 +56,13 @@
 
     var showNavigation = function (questionCount) {
         for(var i = 0; i < questionCount; i++) {
-            $("<div class='question_id'>" + i + "</div>").appendTo("#navigation");
+            $("<div id = 'question-nav-" + (i + 1) + 
+              "' class='question-button btn btn-success'>" + (i + 1) + "</div>").appendTo("#question-navigation");
         }
     }
 
     var showQuestion = function () {
+        $("#question-nav-" + (currentQuestion + 1)).addClass("active");
         $("#answers").text("");
         $("#question").text(questions[currentQuestion]);
         var questionAnswers = answers[currentQuestion];
@@ -74,7 +78,8 @@
             checked = "";
             if(checkedAnswers[i]) checked = "checked";
             $('<input type = "checkbox" id = "' + answerID + '"' + checked + ' />' +
-              '<label for = "' + answerID + '">' + questionAnswers[i] + '</label>').
+              ' <label for = "' + answerID + '">' + questionAnswers[i] + '</label>' +
+              '<div class = "clearfix"></div>').
                   appendTo("#answers");
         }
     }
@@ -150,14 +155,14 @@
     }
 </script>
     <div class="test_container">
-        <div>You have <span id="timer"></span> minutes left</div>
-        <div id="navigation"></div>
-        <div id="question_container">
+        <div class="timer-container"><span id="timer"></span></div>
+        <div id="question-navigation" class="btn-group-vertical"></div>
+        <div id="question-container">
             <div id="question"></div>
             <div id="answers"></div>
         </div>
-        <div id="answer_button">Answer</div>
-        <div id="finish_button">Finish</div>
+        <div id="finish-button" class="btn btn-primary">Finish</div>
+        <div id="answer-button" class="btn btn-success">Answer</div>
     </div>
     <div id="result"></div>
 {% endblock %}

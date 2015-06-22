@@ -8,11 +8,11 @@
     <form action="{% url 'update_course' course.id %}" method="post">
         {% csrf_token %}
         {{ course_form }}
-        <input type="submit" value="Update"/>
+        <input class="btn btn-primary form-btn" type="submit" value="Update"/>
     </form>
     <form action="{% url 'delete_course' course.id %}" method="post">
         {% csrf_token %}
-        <input type="submit" value="Delete" />
+        <input class="btn btn-danger form-btn delete-course-btn" type="submit" value="Delete" />
     </form>
-    <a href="{% url 'edit_modules' course.id %}">Modules</a>
+    <a class="middle-href" href="{% url 'edit_modules' course.id %}">Modules</a>
 {% endblock %}

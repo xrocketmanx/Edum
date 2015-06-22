@@ -2,32 +2,39 @@
 
 
 {% block main %}
-    {{ user.username }}
-    <form action="{% url 'update_profile' user.id %}" method="post">
-        {% csrf_token %}
-        {{ profile_form }}
-        <input type="submit" value="Update"/>
-    </form>
-    <form action="{% url 'update_password' %}" method="post">
-        {% csrf_token %}
-        {{ password_form }}
-        <input type="submit" value="Update"/>
-    </form>
-    {% for course in signed_courses.all %}
-        <div class="list_element">
-            <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a></h1>
-            {% if course in user.user_profile.signed_courses.all %}
-                <a href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
-            {% endif %}
-            <div class="like-container">
-                 <span class="label label-primary like-count">
-                 <span class="glyphicon glyphicon-heart"></span> 
-                    {{ course.rating }}
-                 </span>
-             </div>
-            {% if editing_permission and user.id == course.author.id %}
-                <a href="{% url 'edit_course' course.id %}">edit</a>
-            {% endif %}
-        </div>
-    {% endfor %}
+    <span class="label label-success">Hello {{ user.username }}</span>
+    <div class="profile-data-container">
+        Change credentials:
+        <form action="{% url 'update_profile' user.id %}" method="post">
+            {% csrf_token %}
+            {{ profile_form }}
+            <input class ="btn btn-primary form-btn" type="submit" value="Update"/>
+        </form>
+        Change password:
+        <form action="{% url 'update_password' %}" method="post">
+            {% csrf_token %}
+            {{ password_form }}
+            <input class ="btn btn-primary form-btn" type="submit" value="Update"/>
+        </form>
+    </div>
+    <div class="course-container">
+        {% for course in signed_courses.all %}
+            <div class="course-element course-element-crutch">
+                <h1><a href="{% url 'course' course.id %}">{{ course.name }}</a>
+                    {% if editing_permission and user.id == course.author.id %}
+                        <a class="glyphicon glyphicon-edit edit-button" href="{% url 'edit_course' course.id %}"></a>
+                    {% endif %}
+                </h1>
+                <a class="label label-danger" href="{% url 'unsubscribe' course.id %}">unsubscribe</a>
+                <div class="like-container">
+                    <span class="label label-primary like-count">
+                        <span class="glyphicon glyphicon-heart"></span> 
+                        {{ course.rating }}
+                    </span>
+                </div>
+            </div>
+            <div class="clearfix course-break"></div>
+        {% endfor %}
+    </div>
+    <br/>
 {% endblock %}

@@ -24,10 +24,6 @@ def group_required(*group_names):
 @login_required()
 def profile(request):
     user = request.user
-    editing_permission_groups = user.groups.filter(name='teachers')
-    editing_permission = False
-    if len(editing_permission_groups) > 0:
-        editing_permission = True
     return render(
         request,
         'profile.html',
@@ -38,7 +34,6 @@ def profile(request):
             'password_form': PasswordForm,
             'csrf_token': csrf(request),
             'signed_courses': user.user_profile.signed_courses,
-            'editing_permission': editing_permission,
             'loginpartial': login_partial(request),
         })
     )

@@ -11,21 +11,21 @@
 {% block main %}
     <div class="list">
         {% for form in forms %}
+            <a class="glyphicon glyphicon-edit edit-button test-edit-btn" href="{% url 'edit_test' module.course.id module.id form.test_id %}"></a>
             <form action="{% url 'update_test' module.id form.test_id %}" method="post">
                 {% csrf_token %}
                 {{ form }}
-                <input type="submit" value="Update"/>
+                <input class="btn btn-primary form-btn" type="submit" value="Update"/>
             </form>
-            <a href="{% url 'edit_test' module.course.id module.id form.test_id %}">Edit</a>
             <form action="{% url 'delete_test' module.id form.test_id %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Delete"/>
+                <input class="btn btn-danger form-btn delete-course-btn" type="submit" value="Delete"/>
             </form>
         {% endfor %}
     </div>
     <form action="{% url 'add_test' module.id %}" method="post">
         {% csrf_token %}
         {{ test_form }}
-        <input type="submit" />
+        <input class="btn btn-success form-btn" type="submit" value="Create" />
     </form>
 {% endblock %}

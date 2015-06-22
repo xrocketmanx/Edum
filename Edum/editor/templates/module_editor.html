@@ -12,11 +12,11 @@
             <form action="{% url 'update_module' course.id form.module_id %}" method="post">
                 {% csrf_token %}
                 {{ form }}
-                <input type="submit" value="Update" />
+                <input class="btn btn-primary form-btn" type="submit" value="Update" />
             </form>
             <form action="{% url 'delete_module' course.id form.module_id %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Delete" />
+                <input class="btn btn-danger form-btn delete-course-btn" type="submit" value="Delete" />
             </form>
             <a href="{% url 'edit_lectures' course.id form.module_id %}">Lectures</a>
             <a href="{% url 'edit_tests' course.id form.module_id %}">Tests</a>
@@ -25,6 +25,6 @@
     <form action="{% url 'add_module' course.id %}" method="post">
         {% csrf_token %}
         {{ module_form }}
-        <input type="submit" />
+        <input class="btn btn-success form-btn" type="submit" value="Create"/>
     </form>
 {% endblock %}

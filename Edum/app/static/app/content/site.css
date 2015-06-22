@@ -1,59 +1,4 @@
-﻿/*body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-}
-
-.header {
-    background: white;
-    padding: 9px 0;
-    border-bottom: 1px solid #aaa;
-    position: relative;
-}
-
-.footer {
-    border-top: 1px solid #aaa;
-    color: #909090;
-    font-size: 18px;
-    line-height: 24px;
-    padding: 18px 0 18px;
-    background: white;
-}
-
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-input,
-select,
-textarea {
-    max-width: 280px;
-}
-
-.field-validation-error {
-    color: #b94a48;
-}
-
-.field-validation-valid {
-    display: none;
-}
-
-input.input-validation-error {
-    border: 1px solid #b94a48;
-}
-
-input[type="checkbox"].input-validation-error {
-    border: 0 none;
-}
-
-.validation-summary-errors {
-    color: #b94a48;
-}
-
-.validation-summary-valid {
-    display: none;
-}*/
-
+﻿
 .navigation {
     left: 90px;
     margin: 15px;
@@ -65,10 +10,34 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
     text-decoration: none;
 }
 
+.middle-href {
+    right: 50%;
+    transform: translate(0, -50%);
+    position: absolute;
+}
+
 .edit-button {
     font-size: 30px;
     top: -25px;
     position: relative;
+}
+
+/*forms*/
+
+.form-btn {
+    height: 45px;
+    width: 100px;
+    position: relative;
+    top: -2px;
+    font-size: 20px;
+}
+
+form input, textarea{
+    display: block;
+}
+
+form input[type=submit] {
+    margin-top: 10px;
 }
 
 .navbar-default {
@@ -117,6 +86,12 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
     border-bottom: 1px solid black;
 }
 
+.delete-course-btn {
+    position: relative;
+    top: -78px;
+    left: 91%;
+}
+
 .course-container {
     
 }
@@ -163,6 +138,12 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
     text-decoration: none;
 }
 
+.test-edit-btn {
+    position: relative;
+    left: 235px;
+    top: 25px;
+}
+
 /*lecture*/
 .video-container {
     display: block;
@@ -170,6 +151,67 @@ a:hover.glyphicon, a:focus.glyphicon, a.glyphicon {
     margin-right: auto;
     width: 800px;
     height: 600px;
+}
+
+/*testing*/
+.timer-container {
+    display: inline-block;
+    float: right;
+    width: 75px;
+    height: 75px;
+    border-radius: 100%;
+    background-color: #99E28B;
+}
+
+.question-button {
+}
+
+#timer {
+    left: 15%;
+    top: 20%;
+    position: relative;
+}
+
+#question-navigation {
+    display: inline-block;
+}
+
+#question-container {
+    left: 100px;
+    top: -78px;
+    position: relative;
+}
+
+#answer-button {
+    float: right;
+    position: relative;
+    left: -120px;
+}
+
+#finish-button {
+    float:right;
+    position: relative;
+    left: -5px;
+}
+
+#answers {
+    position: relative;
+    top: 10px;
+    left: 30px;
+}
+
+/*profile*/
+.course-element-crutch {
+    height: 105px;
+}
+
+.profile-data-container {
+    margin-top: 45px;
+    margin-bottom: 45px;
+}
+
+.profile-data-container form{
+    padding-left: 5em;
 }
 
 /**/
