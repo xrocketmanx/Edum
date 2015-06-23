@@ -22,36 +22,39 @@
     </form>
     <p>Questions(Number = {{ question_forms|length }})</p>
     {% for question_form in question_forms %}
-        <form action="{% url 'update_question' test.id question_form.question_id %}" method="post">
-            {% csrf_token %}
-            {{ question_form }}
-            <input type="submit" value="Update"/>
-        </form>
-        <form action="{% url 'delete_question' test.id question_form.question_id %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="Delete"/>
-        </form>
+        <div class="question-form-container">
+            <form action="{% url 'update_question' test.id question_form.question_id %}" method="post">
+                {% csrf_token %}
+                {{ question_form }}
+                <input class="btn btn-primary" type="submit" value="Update"/>
+            </form>
+            <form class="question-delete-form" action="{% url 'delete_question' test.id question_form.question_id %}" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Delete" />
+            </form>
+        </div>
         <p>Answers</p>
         <div class="rows">
-        {% for answer_form in question_form.answers %}
-            <div class="col-md-4">
-            <form action="{% url 'update_answer' question_form.question_id answer_form.answer_id %}" method="post">
-                {% csrf_token %}
-                {{ answer_form }}
-                <input type="submit" value="Update"/>
-            </form>
-            <form action="{% url 'delete_answer' question_form.question_id answer_form.answer_id %}" method="post">
-                {% csrf_token %}
-                <input type="submit" value="Delete"/>
-            </form>
-            </div>
-        {% endfor %}
+            {% for answer_form in question_form.answers %}
+                <div class="col-md-4">
+                <form action="{% url 'update_answer' question_form.question_id answer_form.answer_id %}" method="post">
+                    {% csrf_token %}
+                    {{ answer_form }}
+                    <input class="btn btn-primary" type="submit" value="Update"/>
+                </form>
+                <form class="answer-delete-form" action="{% url 'delete_answer' question_form.question_id answer_form.answer_id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-danger" type="submit" value="Delete"/>
+                </form>
+                </div>
+            {% endfor %}
+        </div>
         <form action="{% url 'add_answer' question_form.question_id %}" method="post">
             {% csrf_token %}
             {{ answer_form }}
-            <input type="submit" />
+            <input type="submit" class="btn btn-success" value="Create"/>
         </form>
-        </div>
+        <div class="clearfix course-break"></div>
     {% endfor %}
     <form action="{% url 'add_question' test.id %}" method="post">
         {% csrf_token %}

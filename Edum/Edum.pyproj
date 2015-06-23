@@ -85,6 +85,8 @@
     <Folder Include="usersys\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\static\app\7cprmEoa0DM.jpg" />
+    <Content Include="app\static\app\8E3fJZ-m2DU.jpg" />
     <Content Include="app\templates\app\403-page.html" />
     <Content Include="app\templates\app\course.html" />
     <Content Include="app\templates\app\courses.html" />

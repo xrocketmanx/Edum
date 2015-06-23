@@ -6,8 +6,8 @@
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Login"/>
+        <input class="btn btn-success" type="submit" value="Login"/>
     </form>
-    <a href="{% url 'register' %}">Register</a>
+    <a class="btn btn-primary register-btn" href="{% url 'register' %}">Register</a>
 
 {% endblock %}

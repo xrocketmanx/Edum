@@ -1,16 +1,17 @@
 # -*- encoding: utf-8 -*-
 import json
+from datetime import datetime, timedelta
 from random import shuffle
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
-from datetime import datetime, timedelta
-from app.models import *
-from editor.forms import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.context_processors import csrf
 from django.core import serializers
+from app.models import *
+from editor.forms import *
 from usersys.views import login_partial
 
 def courses(request):
@@ -19,6 +20,18 @@ def courses(request):
     editing_permission = False
     if len(editing_permission_groups) > 0:
         editing_permission = True
+
+    courses = Course.objects.all()
+    paginator = Paginator(courses, 5) # refactor
+
+    page = request.GET.get('page')
+    try:
+        courses = paginator.page(page)
+    except PageNotAnInteger:
+        courses = paginator.page(1)
+    except EmptyPage:
+        courses = paginator.page(paginator.num_pages)
+
     return render(
         request,
         'app/courses.html',
@@ -26,7 +39,7 @@ def courses(request):
         {
             'is_authenticated': user.is_authenticated(),
             'editing_permission': editing_permission,
-            'courses': Course.objects.all(),
+            'courses': courses,
             'course_form': CourseForm,
             'csrf_token': csrf(request),
             'loginpartial': login_partial(request),

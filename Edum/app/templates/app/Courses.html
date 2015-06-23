@@ -26,6 +26,23 @@
             <div class="clearfix course-break"></div>
         {% endfor %}
     </div>
+    <ul class="pagination pagination-lg">
+        {% if courses.has_previous %}
+            <li>
+                <a href="?page={{ courses.previous_page_number }}">
+                    <span class="glyphicon glyphicon-arrow-left"></span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if courses.has_next %}
+            <li>
+                <a href="?page={{ courses.next_page_number }}">
+                    <span class="glyphicon glyphicon-arrow-right"></span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
     <br/>
     {% if editing_permission %}
         <form action="{% url 'add_course' %}" method="post">
