@@ -11,7 +11,7 @@ class CourseForm(ModelForm):
         model = Course
         fields = ['name', 'overview']
         widgets = {
-            'overview': Textarea(attrs={'rows': 10, 'cols': 174})
+            'overview': Textarea(attrs={'rows': 10, 'class': 'wide-textarea'})
         }
 
 class ModuleForm(ModelForm):
@@ -20,7 +20,7 @@ class ModuleForm(ModelForm):
         model = Module
         fields = ['name', 'overview']
         widgets = {
-            'overview': Textarea(attrs={'rows': 10, 'cols': 174})
+            'overview': Textarea(attrs={'rows': 10, 'class': 'wide-textarea'})
         }
 
 class LectureForm(ModelForm):

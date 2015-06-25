@@ -37,7 +37,6 @@ form input, textarea{
 }
 
 form input[type=submit] {
-    /*margin-top: 10px;*/
     top: 10px;
     position: relative;
 }
@@ -48,6 +47,10 @@ form input[type=submit] {
 
 .navbar-default .navbar-brand {
     color: #7522B7;
+}
+
+.wide-textarea {
+    width: 100%;
 }
 
 /* like */
@@ -90,7 +93,7 @@ form input[type=submit] {
 
 .delete-course-btn {
     position: relative;
-    margin-top: -8.5%;
+    margin-top: -6%;
     left: 91%;
 }
 
@@ -224,18 +227,18 @@ form input[type=submit] {
 .question-delete-form input[type=submit] {
     position: relative;
     left: 21.5%;
-    margin-top: -7.5%;
+    margin-top: -5%;
 }
 
 .answer-delete-form input[type=submit] {
     position: relative;
     left: 70%;
-    margin-top: -24.5%;
+    margin-top: -16%;
 }
 
 /*register*/
 .register-btn {
-    margin-top: -7.5%;
+    margin-top: -6%;
     left: 13.5%;
     position: relative;
 }
