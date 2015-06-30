@@ -48,8 +48,10 @@ def courses(request):
 
 def course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
+    update_course_duration(course)
     progress = 0
     if request.user.is_authenticated():
+        update_course_progress(course, request.user.user_profile)
         progresses = CourseProgress.objects.filter(user=request.user.user_profile, course=course)
         if len(progresses) > 0:
             progress = progresses[0]
@@ -206,7 +208,6 @@ def get_test_result(request, test_id):
     user_results = json.loads(request.POST['results'])
     user_grade = calculate_grade(user_results, test.questions.all())
     save_test_result(user_grade, request.user.user_profile, test)
-    update_course_progress(test.module.course, request.user.user_profile)
 
     return HttpResponse(
         user_grade,
@@ -233,12 +234,21 @@ def update_course_progress(course, user_profile):
     course_progress = CourseProgress.objects.filter(course=course, user=user_profile)
     test_count = sum([len(module.tests.all()) for module in course.modules.all()])
     user_progress = course_progress[0]
+    user_progress.progress = 0
     for module in course.modules.all():
         for test in module.tests.all():
             test_results = TestResult.objects.filter(test=test, user=user_profile)
             if len(test_results) > 0 and test_results[0].passed:
                 user_progress.progress += 100 / test_count
     user_progress.save()
+
+def update_course_duration(course):
+    duration = 0
+    for module in course.modules.all():
+        for test in module.tests.all():
+            duration += test.duration
+    course.duration = duration / 60
+    course.save()
 
 def calculate_grade(user_results, test_questions):
     user_grade = 0
