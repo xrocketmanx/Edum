@@ -11,276 +11,143 @@ from usersys.views import group_required
 from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import FormView, CreateView, DeleteView, UpdateView
 from django.utils.decorators import method_decorator
+from editor.editors import *
 
 #Course editing
 
-class CourseCreator(CreateView):
-    model = Course
-    success_url = 'edit_course'
-    failure_url = 'courses'
+@group_required('teachers')
+def create_course(request):
+    if request.POST:
+        course = course_editor.create(request.POST, author=request.user)
+        if course:
+            return redirect('edit_course', course_id=course.id)
+    return redirect('courses')
 
-    def post(self, request, *args, **kwargs):
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            course = form.save(False)
-            course.author = request.user
-            course.save()
-            return redirect(self.success_url, course_id=course.id)
-        return redirect(self.failure_url)
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def update_course(request, pk):
+    if request.POST:
+        course_editor.update(request.POST, pk)
+    return redirect('edit_course', course_id=pk)
 
-class CourseUpdater(UpdateView):
-    model = Course
-    form_class = CourseForm
-    success_url = '/editor/courses/%s'
-
-    def get_success_url(self):
-        return self.success_url % self.object.id
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class CourseDeleter(DeleteView):
-    model = Course
-    form_class = CourseForm
-    success_url = '/courses'
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_course(request, pk):
+    if request.POST:
+        course_editor.delete(pk)
+    return redirect('courses')
 
 #Module editing
 
-class ModuleCreator(CreateView):
-    model = Module
-    success_url = 'edit_modules'
+@group_required('teachers')
+def create_module(request, course_id):
+    course = course_editor.get_model(course_id)
+    if request.POST:
+        module_editor.create(request.POST, course=course)
+    return redirect('edit_modules', course_id=course_id)
 
-    def post(self, request, *args, **kwargs):
-        form = ModuleForm(request.POST)
-        course = get_object_or_404(Course, pk=kwargs['course_id'])
-        if form.is_valid():
-            module = form.save(False)
-            module.course = course
-            module.save()
-        return redirect(self.success_url, course_id=course.id)
+@group_required('teachers')
+def update_module(request, course_id, pk):
+    if request.POST:
+        module_editor.update(request.POST, pk)
+    return redirect('edit_modules', course_id=course_id)
 
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_module(request, course_id, pk):
+    if request.POST:
+        module_editor.delete(pk)
+    return redirect('edit_modules', course_id=course_id)
 
-class ModuleUpdater(UpdateView):
-    model = Module
-    form_class = ModuleForm
-    success_url = '/editor/courses/%s/modules'
+#Lecture editing TODO:add duration to course
 
-    def get_success_url(self):
-        return self.success_url % (self.object.course.id)
+@group_required('teachers')
+def create_lecture(request, module_id):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        lecture_editor.create(request.POST, module=module)
+    return redirect('edit_lectures', module_id=module.id, course_id=module.course.id)
 
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def update_lecture(request, module_id, pk):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        lecture_editor.update(request.POST, pk)
+    return redirect('edit_lectures', module_id=module.id, course_id=module.course.id)
 
-class ModuleDeleter(DeleteView):
-    model = Module
-    form_class = ModuleForm
-    success_url = '/editor/courses/%s/modules'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.course.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-#Lecture editing TODO: add duration to course
-
-class LectureCreator(CreateView):
-    model = Lecture
-    success_url = 'edit_lectures'
-
-    def post(self, request, *args, **kwargs):
-        form = LectureForm(request.POST)
-        module = get_object_or_404(Module, pk=kwargs['module_id'])
-        course = module.course
-        if form.is_valid():
-            lecture = form.save(False)
-            lecture.module = module
-            lecture.save()
-        return redirect(self.success_url, course_id=course.id, module_id=module.id)
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class LectureUpdater(UpdateView):
-    model = Lecture
-    form_class = LectureForm
-    success_url = '/editor/courses/%s/modules/%s/lectures'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.module.course.id, self.object.module.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class LectureDeleter(DeleteView):
-    model = Lecture
-    form_class = LectureForm
-    success_url = '/editor/courses/%s/modules/%s/lectures'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.module.course.id, self.object.module.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_lecture(request, module_id, pk):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        lecture_editor.delete(pk)
+    return redirect('edit_lectures', module_id=module.id, course_id=module.course.id)
 
 #Test editing
 
-class TestCreator(CreateView):
-    model = Test
-    success_url = 'edit_tests'
+@group_required('teachers')
+def create_test(request, module_id):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        test_editor.create(request.POST, module=module)
+    return redirect('edit_tests', module_id=module.id, course_id=module.course.id)
 
-    def post(self, request, *args, **kwargs):
-        form = TestForm(request.POST)
-        module = get_object_or_404(Module, pk=kwargs['module_id'])
-        course = module.course
-        if form.is_valid():
-            test = form.save(False)
-            test.module = module
-            course.duration += test.duration / 60
-            course.save()
-            test.save()
-        return redirect(self.success_url, course_id=course.id, module_id=module.id)
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def update_test(request, module_id, pk):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        test_editor.update(request.POST, pk)
+    return redirect('edit_tests', module_id=module.id, course_id=module.course.id)
 
-class TestUpdater(UpdateView):
-    model = Test
-    form_class = TestForm
-    success_url = '/editor/courses/%s/modules/%s/tests'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.module.course.id, self.object.module.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class TestDeleter(DeleteView):
-    model = Test
-    form_class = TestForm
-    success_url = '/editor/courses/%s/modules/%s/tests'
-
-    def post(self, request, *args, **kwargs):
-        test = self.get_object()
-        test.module.course.duration -= test.duration / 60
-        test.module.course.save()
-        return self.delete(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return self.success_url % (self.object.module.course.id, self.object.module.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_test(request, module_id, pk):
+    module = module_editor.get_model(module_id)
+    if request.POST:
+        test_editor.delete(pk)
+    return redirect('edit_tests', module_id=module.id, course_id=module.course.id)
 
 #Question editing
 
-class QuestionCreator(CreateView):
-    model = Question
-    success_url = 'edit_test'
+def create_question(request, test_id):
+    test = test_editor.get_model(test_id)
+    if request.POST:
+        question_editor.create(request.POST, test=test)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
-    def post(self, request, *args, **kwargs):
-        form = QuestionForm(request.POST)
-        test = get_object_or_404(Test, pk=kwargs['test_id'])
-        if form.is_valid():
-            question = form.save(False)
-            question.test = test
-            question.save()
-        return redirect(self.success_url, course_id=test.module.course.id, module_id=test.module.id, test_id=test.id)
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def update_question(request, test_id, pk):
+    test = test_editor.get_model(test_id)
+    if request.POST:
+        question_editor.update(request.POST, pk)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
-class QuestionUpdater(UpdateView):
-    model = Question
-    form_class = QuestionForm
-    success_url = '/editor/courses/%s/modules/%s/tests/%s'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.test.module.course.id, self.object.test.module.id, self.object.test.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class QuestionDeleter(DeleteView):
-    model = Question
-    form_class = QuestionForm
-    success_url = '/editor/courses/%s/modules/%s/tests/%s'
-
-    def get_success_url(self):
-        return self.success_url % (self.object.test.module.course.id, self.object.test.module.id, self.object.test.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_question(request, test_id, pk):
+    test = test_editor.get_model(test_id)
+    if request.POST:
+        question_editor.delete(pk)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
 #Answer editing
 
-class AnswerCreator(CreateView):
-    model = Answer
-    success_url = 'edit_test'
+def create_answer(request, question_id):
+    question = question_editor.get_model(question_id)
+    test = question.test
+    if request.POST:
+        answer_editor.create(request.POST, question=question)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
-    def post(self, request, *args, **kwargs):
-        form = AnswerForm(request.POST)
-        question = get_object_or_404(Question, pk=kwargs['question_id'])
-        if form.is_valid():
-            answer = form.save(False)
-            answer.question = question
-            answer.save()
-        return redirect(
-            self.success_url, course_id=question.test.module.course.id, module_id=question.test.module.id, test_id=question.test.id)
-    
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def update_answer(request, question_id, pk):
+    question = question_editor.get_model(question_id)
+    test = question.test
+    if request.POST:
+        answer_editor.update(request.POST, pk)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
-class AnswerUpdater(UpdateView):
-    model = Answer
-    form_class = AnswerForm
-    success_url = '/editor/courses/%s/modules/%s/tests/%s'
-
-    def get_success_url(self):
-        return self.success_url % (
-            self.object.question.test.module.course.id, self.object.question.test.module.id, self.object.question.test.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-class AnswerDeleter(DeleteView):
-    model = Answer
-    form_class = AnswerForm
-    success_url = '/editor/courses/%s/modules/%s/tests/%s'
-
-    def get_success_url(self):
-        return self.success_url % (
-            self.object.question.test.module.course.id, self.object.question.test.module.id, self.object.question.test.id)
-
-    @method_decorator(group_required('teachers'))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+@group_required('teachers')
+def delete_answer(request, question_id, pk):
+    question = question_editor.get_model(question_id)
+    test = question.test
+    if request.POST:
+        answer_editor.delete(pk)
+    return redirect('edit_test', test_id=test.id, module_id=test.module.id, course_id=test.module.course.id)
 
 #Editor views
 
