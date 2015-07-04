@@ -2,16 +2,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
-from app.models import *
-from editor.forms import *
 from django.core.context_processors import csrf
-from usersys.views import login_partial
 from django.contrib.auth.decorators import login_required
-from usersys.views import group_required
 from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import FormView, CreateView, DeleteView, UpdateView
 from django.utils.decorators import method_decorator
 from editor.editors import *
+from app.models import *
+from editor.forms import *
+from usersys.views import group_required
+from Edum.shortcuts import login_partial
 
 #Course editing
 

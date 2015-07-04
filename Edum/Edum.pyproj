@@ -36,8 +36,12 @@
     <Compile Include="app\urls.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="app\utils.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\views.py" />
     <Compile Include="app\__init__.py" />
+    <Compile Include="editor\editors.py" />
     <Compile Include="editor\forms.py">
       <SubType>Code</SubType>
     </Compile>
@@ -48,6 +52,9 @@
     </Compile>
     <Compile Include="editor\views.py" />
     <Compile Include="editor\__init__.py" />
+    <Compile Include="Edum\shortcuts.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="manage.py" />
     <Compile Include="Edum\__init__.py" />
     <Compile Include="Edum\settings.py" />
@@ -90,6 +97,7 @@
     <Content Include="app\templates\app\403-page.html" />
     <Content Include="app\templates\app\course.html" />
     <Content Include="app\templates\app\courses.html" />
+    <Content Include="Edum\templates\loginpartial.html" />
     <Content Include="usersys\templates\profile.html" />
     <Content Include="app\templates\app\testing.html" />
     <Content Include="editor\templates\tests_editor.html" />

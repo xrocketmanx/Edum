@@ -1,16 +1,16 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.core.context_processors import csrf
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.http import * # remove later
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
-from django.template.loader import render_to_string
 from usersys.forms import RegistrationForm, ConfirmationToken, PetitionForm, ProfileForm, PasswordForm
 from django.views.generic.edit import UpdateView
+from Edum.shortcuts import render
 
 def group_required(*group_names):
     """Requires user membership in at least one of the groups passed in."""
@@ -27,15 +27,13 @@ def profile(request):
     return render(
         request,
         'profile.html',
-        context_instance = RequestContext(request,
         {
             'user': user,
             'profile_form': ProfileForm(instance=request.user),
             'password_form': PasswordForm,
             'csrf_token': csrf(request),
             'signed_courses': user.user_profile.signed_courses,
-            'loginpartial': login_partial(request),
-        })
+        }
     )
 
 class ProfileUpdater(UpdateView):
@@ -70,13 +68,12 @@ def login(request):
             message = "Wrong credentials, try again."
     return render(request,
         'login.html',
-        context_instance = RequestContext(request,
         {
             'form': AuthenticationForm,
             'csrf_token': csrf(request),
             'message': message,
-            'loginpartial': login_partial(request),
-         }))
+         }
+    )
 
 def register(request):
     if request.user.is_authenticated():
@@ -92,20 +89,12 @@ def register(request):
             message = error.args[0]
     return render(request,
         'register.html',
-        context_instance = RequestContext(request,
         {
             'form': RegistrationForm,
             'message': message,
             'csrf_token': csrf(request),
-         }))
-
-def login_partial(request):
-    return render_to_string('loginpartial.html',
-        context_instance = RequestContext(request,
-        {
-            'user': request.user,
-            'csrf_token': csrf(request),
-        }))
+         }
+     )
 
 @login_required()
 def logout(request):
@@ -127,9 +116,7 @@ def success(request):
         return redirect("courses")
     return render(request,
         'success.html',
-        context_instance = RequestContext(request,
-        {
-         }))
+    )
 
 @login_required(login_url="login")
 def petition(request):
@@ -142,14 +129,12 @@ def petition(request):
             message = "Successfuly sent petition"
     return render(request,
         'petition.html',
-        context_instance = RequestContext(request,
+        
         {
             'form': PetitionForm, 
             'message': message,
             'csrf_token': csrf(request),
-            'loginpartial': login_partial(request),
         }
-        )
     )
 
 

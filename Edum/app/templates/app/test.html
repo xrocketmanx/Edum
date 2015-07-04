@@ -25,7 +25,7 @@
 </div>
 
 <div class="start-test-button">
-    <a class="btn btn-primary" href="{% url 'start_test' test.id %}">Start test</a>
+    <a class="btn btn-primary" href="{% url 'start_test' test.module.course.id test.id %}">Start test</a>
 </div>
 
 {% endblock %}

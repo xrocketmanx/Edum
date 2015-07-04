@@ -18,7 +18,7 @@
 
         startTimer(testDuration / 1000, $("#timer"));
 
-        $.get("{% url 'get_questions' test.id %}", function (data) {
+        $.get("{% url 'get_questions' test.module.course.id test.id %}", function (data) {
             questions = Object.keys(data);
             for (var i in questions){
                 answers.push(data[questions[i]]);
@@ -122,7 +122,7 @@
     var finishTest = function () {
         $('.test_container').text("");
         $.post(
-            "{% url 'get_test_result' test.id %}",
+            "{% url 'get_test_result' test.module.course.id test.id %}",
             { 'results': JSON.stringify(userResults) },
             function (data) {
                 $('#result').text(data);
